@@ -10,10 +10,10 @@ our $VERSION = '0.1';
 before sub {
     # Redirect to login page if necessary (for /my and /admin)
     if (not session('user') and
-        (request->path_info =~ q,^/my(/?|$), or
-         request->path_info =~ q,^/admin(/?|$),)) {
+        (request->path_info =~ q,^/BenutzerDB/my(/?|$), or
+         request->path_info =~ q,^/BenutzerDB/admin(/?|$),)) {
         var requested_path => request->path_info;
-        request->path_info('/');
+        request->path_info('/BenutzerDB/');
     }
 };
 
@@ -21,7 +21,7 @@ before sub {
 # displays the login form for invalid sessions and in index page for
 # valid sessions
 #
-get '/' => sub {
+get '/BenutzerDB/' => sub {
     if (not session('user')) {
         return template 'login';
     } else {
@@ -29,8 +29,8 @@ get '/' => sub {
     }
 };
 
-post '/login' => sub {
-    return redirect '/' unless exists params->{username} && exists params->{password};
+post '/BenutzerDB/login' => sub {
+    return redirect '/BenutzerDB/' unless exists params->{username} && exists params->{password};
 
     my $user = params->{username};
     my $pass = params->{password};
@@ -46,15 +46,15 @@ post '/login' => sub {
     
     session user => $user;
 
-    redirect '/';
+    redirect '/BenutzerDB/';
 };
 
-any '/logout' => sub {
+any '/BenutzerDB/logout' => sub {
     session user => undef;
-    redirect '/';
+    redirect '/BenutzerDB/';
 };
 
-get '/my/pin' => sub {
+get '/BenutzerDB/my/pin' => sub {
     my $db = database;
     my $user = session('user');
 
@@ -64,11 +64,11 @@ get '/my/pin' => sub {
     return template 'mypin', { user => $user, pin => $pin };
 };
 
-get '/register' => sub {
+get '/BenutzerDB/register' => sub {
     template 'register';
 };
 
-post '/register' => sub {
+post '/BenutzerDB/register' => sub {
     if (!exists params->{reg_username} ||
         !exists params->{reg_password}) {
         return template 'register', { error => 'Nutzername/Passwort fehlen' };
@@ -94,7 +94,7 @@ post '/register' => sub {
 
     session user => $user;
 
-    redirect '/';
+    redirect '/BenutzerDB/';
 };
 
 true;
