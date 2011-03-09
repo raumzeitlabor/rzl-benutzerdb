@@ -1,0 +1,56 @@
+--
+-- Benutzer
+--
+CREATE TABLE nutzer (
+	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	handle VARCHAR(32) NOT NULL UNIQUE,
+	passwort TEXT NOT NULL,
+	pin TEXT NULL,
+
+	realname TEXT NULL,
+	email TEXT NULL,
+	credit DECIMAL(6, 2) DEFAULT 0 NOT NULL
+);
+
+--
+-- Registrierte Geräte
+--
+CREATE TABLE devices (
+	handle VARCHAR(32) REFERENCES nutzer(handle),
+	name TEXT,
+	mac VARCHAR(17)
+);
+ALTER TABLE devices ADD UNIQUE INDEX (mac);
+
+--
+-- DHCP-Leases (aktualisiert durch push von der firebox)
+--
+CREATE TABLE leases (
+	ip VARCHAR(39) PRIMARY KEY,
+	mac VARCHAR(17) NOT NULL,
+	ipv4_reachable BOOL NOT NULL,
+	ipv6_reachable BOOL NOT NULL,
+	hostname TEXT NULL
+);
+
+--
+-- Tuerstatus (aktualisiert durch push von der firebox)
+--
+CREATE TABLE tuerstatus (status VARCHAR(1));
+
+
+
+ - Handle
+ - Realname
+ - Passwort
+ - SSL-Zert
+ - SSH-Key
+ - PIN (6-stellig)
+ - e-Mail
+ - Guthaben
+ - Buchungen
+ - Zugänge loggen
+ - Liste MAC-Adressen
+ - Privacy-Settings
+ - Name als Sprachdatei
+
