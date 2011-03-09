@@ -1,0 +1,16 @@
+<h1>Willkommen</h1>
+<p>
+Folgende Aktionen stehen dir links im Menü zur Verfügung:
+</p>
+
+<ul id="welcomelist">
+<li>
+  <strong>PIN anzeigen:</strong><br>
+  Zeigt dir die PIN an, mit der du den Raum betreten kannst, sofern dir eine
+  eingerichtet wurde. Momentan können PINs nur nach Anfrage vergeben werden.
+</li>
+</ul>
+
+<p>
+Bei Fragen jeglicher Art wende dich an sECuRE im IRC (#raumzeitlabor) oder via jabber/mail (michael@stapelberg.de).
+</p>

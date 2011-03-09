@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=<% settings.charset %>" />
+<title>BenutzerDB</title>
+<link rel="stylesheet" href="<% request.base %>/css/style.css" />
+</head>
+<body>
+<div id="header">
+<img style="margin-right: 10px" alt="RZL-Logo" src="/images/logo.png" align="left" width="120px" height="60px">
+<h1>Benutzerdatenbank</h1>
+<p id="logintext" style="clear: both">
+<% IF user %>
+Angemeldet als <strong><% user %></strong> (<a href="/logout">Abmelden</a>)
+<% END %>
+</p>
+<div id="menubox">
+<div id="menu">
+<ul>
+<li><a href="/">Startseite</a></li>
+<% IF user %>
+<li><a href="/my/pin">PIN anzeigen</a></li>
+<% END %>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="content">
+<% content %>
+</div>
+<div id="footer">
+<p>
+Ansprechpartner: sECuRE (jabber: michael@stapelberg.de)
+</p>
+</div>
+</body>
+</html>

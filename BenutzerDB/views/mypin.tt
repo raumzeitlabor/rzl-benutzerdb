@@ -1,0 +1,14 @@
+<% IF pin %>
+<p>
+Deine derzeitige PIN lautet:
+</p>
+
+<p>
+<strong><% pin %></strong> (gefolgt von # zum Bestätigen)
+</p>
+<% ELSE %>
+<p>
+Du hast derzeit keine PIN. Bitte wende dich an einen der Admins, damit dir eine
+PIN erzeugt wird.
+</p>
+<% END %>

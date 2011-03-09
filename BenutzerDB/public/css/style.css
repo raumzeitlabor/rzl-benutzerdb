@@ -1,0 +1,74 @@
+body, input {
+	font-family: Verdana, sans-serif;
+}
+
+#welcomelist li {
+	margin-bottom: 1em;
+}
+
+#content {
+	overflow: hidden;
+	padding-left: 0.25em;
+}
+
+#menubox {
+	height: 24em;
+	float: left;
+}
+
+#menu {
+	border-right: 1px solid black;
+	width: 9em;
+	padding-top: 1em;
+}
+
+#menu ul {
+	list-style-type: none;
+	margin: 0px;
+	padding: 0px;
+}
+
+#menu li {
+	margin: 0px;
+	padding: 0px;
+	margin-bottom: 1em;
+}
+
+#header {
+	border-bottom: 1px solid black;
+}
+
+#header h1 {
+	margin-bottom: 0;
+}
+
+#logintext {
+	margin: 0;
+	margin-left: 1em;
+	margin-bottom: 1em;
+}
+
+#footer {
+	margin-top: 8em;
+	border-top: 1px solid black;
+	font-size: 75%;
+	text-align: center;
+}
+
+#login {
+	text-align: center;
+}
+
+#loginfields {
+	margin-top: 2em;
+	padding: 0.5em;
+	margin-left: 33%;
+	width: 35%;
+	text-align: left;
+	/* TODO: rounded border */
+	border: 1px solid #c0c0c0;
+}
+
+#loginfields input {
+	width: 100%;
+}

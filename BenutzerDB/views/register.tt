@@ -1,0 +1,18 @@
+<h2>Registration</h2>
+
+<p>
+Bitte gib hier deinen üblichen Nickname an und wähle ein Passwort mit
+mindestens 6 Zeichen.
+</p>
+
+<% IF error %>
+<p style="border: 4px solid red">
+<% error %>
+</p>
+<% END %>
+
+<form action="/register" method="post">
+Nutzername: <input type="text" name="reg_username"><br>
+Passwort: <input type="password" name="reg_password"><br>
+<input type="submit">
+</form>
