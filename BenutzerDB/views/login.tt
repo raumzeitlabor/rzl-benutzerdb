@@ -8,13 +8,13 @@ Bitte melde dich an:
 </p>
 <% END %>
 
-<form action="/login" method="post">
+<form action="/BenutzerDB/login" method="post">
 Nutzername: <input type="text" name="username"><br>
 Passwort: <input type="password" name="password"><br>
 <input type="submit">
 </form>
 
 <p style="margin-top: 4em">
-Wenn du noch keinen Account hast, kannst du <a href="/register">dich registrieren</a>.
+Wenn du noch keinen Account hast, kannst du <a href="/BenutzerDB/register">dich registrieren</a>.
 </p>
 

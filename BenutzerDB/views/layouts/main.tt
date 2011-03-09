@@ -12,15 +12,15 @@
 <h1>Benutzerdatenbank</h1>
 <p id="logintext" style="clear: both">
 <% IF user %>
-Angemeldet als <strong><% user %></strong> (<a href="/logout">Abmelden</a>)
+Angemeldet als <strong><% user %></strong> (<a href="/BenutzerDB/logout">Abmelden</a>)
 <% END %>
 </p>
 <div id="menubox">
 <div id="menu">
 <ul>
-<li><a href="/">Startseite</a></li>
+<li><a href="/BenutzerDB/">Startseite</a></li>
 <% IF user %>
-<li><a href="/my/pin">PIN anzeigen</a></li>
+<li><a href="/BenutzerDB/my/pin">PIN anzeigen</a></li>
 <% END %>
 </ul>
 </div>
