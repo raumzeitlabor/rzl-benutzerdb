@@ -65,6 +65,8 @@ sub validate_buffer {
                       my ($data, $headers) = @_;
                       say prefix . "reply from server: " . Dumper($data);
               };
+
+    $buffer = '';
 }
 
 AE::cv->recv
