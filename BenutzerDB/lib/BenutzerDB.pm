@@ -17,6 +17,10 @@ before sub {
     }
 };
 
+get '/BenutzerDB/images/logo.png' => sub {
+    send_file 'images/logo.png';
+};
+
 #
 # displays the login form for invalid sessions and in index page for
 # valid sessions
