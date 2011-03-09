@@ -17,6 +17,11 @@ before sub {
     }
 };
 
+
+get '/BenutzerDB/css/style.css' => sub {
+    send_file 'css/style.css';
+};
+
 get '/BenutzerDB/images/logo.png' => sub {
     send_file 'images/logo.png';
 };
