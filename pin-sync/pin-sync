@@ -36,6 +36,9 @@ use constant BLOCK_SIZE => ((PINS_PER_BLOCK * PIN_SIZE) + CRC32_SIZE);
 # as raw bytes.
 my $json = JSON::XS->new()->ascii(1);
 
+my @waiting_updates = ();
+my $retry = 0;
+
 # Returns EEPROM contents (as binary string) for the given array of 6-digit
 # PINs.
 sub generate_eeprom {
@@ -89,8 +92,37 @@ sub crc_to_hex {
     sprintf('0x%04x', unpack('N', $_[0]))
 }
 
-my @waiting_updates = ();
-my $retry = 0;
+# Eliminates updates to minimize the amount of communication/EEPROM writes.
+# Since we know the current Pinpad CRC, we just strip off the latest PINs,
+# generate updates for that subset and see if this is what’s currently stored
+# in the Pinpad EEPROM. If so, we filter out all updates which are duplicates
+# -- only the first block (since it contains the number of PINs and EEPROM CRC)
+# and the last block should remain.
+sub eliminate_updates {
+    my ($pinpad_crc, @pins) = @_;
+
+    # We try stripping off up to 5 pins, but if that did not work, either this
+    # script was not run for a long time or the EEPROM was corrupetd.
+    for my $tries (1 .. 5) {
+        pop @pins;
+        my $eeprom = generate_eeprom(@pins);
+        my $eeprom_crc = crc_to_hex(substr($eeprom, 0, 4));
+        if ($eeprom_crc eq $pinpad_crc) {
+            say prefix . "Generated EEPROM state for current CRC32";
+
+            # Only keep updates which were not already pushed previously.
+            my @updates = generate_updates($eeprom);
+            my $before = scalar @waiting_updates;
+            @waiting_updates = grep { !($_ ~~ @updates) } @waiting_updates;
+            my $eliminated = $before - @waiting_updates;
+            say prefix . "Eliminated $eliminated redundant updates.";
+            return;
+        }
+    }
+
+    say prefix . "Could not generate EEPROM state for current CRC32.";
+    say prefix . "This hints EEPROM corruption on the Pinpad controller!";
+}
 
 # Pushes the first waiting update to the Pinpad controller.
 sub push_update {
@@ -165,6 +197,7 @@ $stream = AnyEvent::HTTP::Stream->new(
 
             # Otherwise: Fill @waiting_updates and start updating.
             @waiting_updates = generate_updates($eeprom);
+            eliminate_updates($pinpad_crc, @$pins);
             push_update();
         }
 
