@@ -1,0 +1,93 @@
+#!/usr/bin/env perl
+# vim:ts=4:sw=4:expandtab
+
+use strict;
+use warnings;
+use DateTime;
+use AnyEvent;
+use AnyEvent::HTTP;
+#use AnyEvent::HTTP::Stream;
+use JSON::XS;
+use Data::Dumper;
+use DBI;
+use DBD::mysql;
+use v5.10;
+use POSIX qw(ceil floor);
+use String::CRC32;
+use Data::HexDump;
+
+# The following constants are from rzl-hausbus/firmware-pinpad/main.c:
+# a CRC32 checksum needs 4 bytes
+use constant CRC32_SIZE => 4;
+# the amount of pins needs 1 byte (0 <= num_pins <= 180)
+use constant NUM_SIZE => 1;
+# a PIN is encoded in 3 bytes
+use constant PIN_SIZE => 3;
+# we have 6 pins (= 6 * 3 = 18 bytes) per block
+use constant PINS_PER_BLOCK => 6;
+
+use constant BLOCK_SIZE => ((PINS_PER_BLOCK * PIN_SIZE) + CRC32_SIZE);
+
+# Returns EEPROM contents (as binary string) for the given array of 6-digit
+# PINs.
+sub generate_eeprom {
+    my @pins = @_;
+
+    my $num_pins = scalar @pins;
+    my $num_blocks = ceil($num_pins / PINS_PER_BLOCK);
+    my $eeprom = pack('C', $num_pins);
+
+    # Put all PINs in one long string, pad with zeros.
+    my $pinstring = join('', @pins) . ("000000" x 5);
+
+    for my $idx (1 .. $num_blocks) {
+        # Get one block of PINs.
+        my $block = substr($pinstring, 0, 6 * PINS_PER_BLOCK, '');
+
+        # Hex-encode the PINs
+        $block = pack('H*', $block);
+
+        # Calculate the CRC32 checksum and append it (big endian).
+        $block .= pack('N', crc32($block));
+
+        $eeprom .= $block;
+    }
+
+    # Calculate the CRC32 for the whole EEPROM and prepend it (big endian).
+    return pack('N', crc32($eeprom)) . $eeprom;
+}
+
+sub generate_updates {
+    my ($bytes) = @_;
+
+    my @updates = ();
+    for my $idx (0 .. (length($bytes) / 8)) {
+        my $block = substr($bytes, 0, 8, '');
+        my $update = 'E' .
+                     pack('n', ($idx * 8)) .
+                     pack('C', length($block)) .
+                     $block;
+        $update .= pack('N', crc32($update));
+        push @updates, $update;
+    }
+    return @updates;
+}
+
+my $eeprom = generate_eeprom(332211, 123456, 332211, 998866);
+print "target checksum: ";
+my $u = substr($eeprom, 0, 4);
+    while (length($u) > 0) {
+        my $b = substr($u, 0, 1, '');
+        print '\x' . sprintf("%02x", int(unpack("C", $b)));
+    }
+    print "\n";
+
+my @updates = generate_updates($eeprom);
+for my $u (@updates) {
+    print q|perl -Ilib -MBusmaster -E 'Busmaster->new()->send("pinpad", "|;
+    while (length($u) > 0) {
+        my $b = substr($u, 0, 1, '');
+        print '\x' . sprintf("%02x", int(unpack("C", $b)));
+    }
+    print qq|")'\n|;
+}
