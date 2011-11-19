@@ -1,0 +1,34 @@
+Source: raumzeitpinsync
+Section: perl
+Priority: optional
+Maintainer: Michael Stapelberg <michael@stapelberg.de>
+Build-Depends: debhelper (>= 8)
+Build-Depends-Indep: libanyevent-http-perl,
+ libanyevent-perl,
+ libdbd-mysql-perl,
+ libdbi-perl,
+ libjson-xs-perl,
+ libstring-crc32-perl,
+ libtry-tiny-perl,
+ libyaml-syck-perl,
+ perl
+Standards-Version: 3.9.2
+Homepage: http://search.cpan.org/dist/RaumZeitPinSync/
+
+Package: raumzeitpinsync
+Architecture: all
+Depends: ${misc:Depends}, ${perl:Depends},
+ libanyevent-http-perl,
+ libanyevent-perl,
+ libdbd-mysql-perl,
+ libdbi-perl,
+ libjson-xs-perl,
+ libstring-crc32-perl,
+ libtry-tiny-perl,
+ libyaml-syck-perl,
+ perl
+Description: Syncs PINs to the Pinpad controller EEPROM
+ RaumZeitPinSync synchronizes our user-specific PINs to the Pinpad controller
+ EEPROM.
+ .
+ This description was automagically extracted from the module by dh-make-perl.
