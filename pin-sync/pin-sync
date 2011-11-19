@@ -1,20 +1,24 @@
 #!/usr/bin/env perl
 # vim:ts=4:sw=4:expandtab
+# © 2011 Michael Stapelberg (see also: LICENSE)
+#
+# Synchronizes the database PINs to the pinpad-controller EEPROM.
 
 use strict;
 use warnings;
 use DateTime;
 use AnyEvent;
 use AnyEvent::HTTP;
-#use AnyEvent::HTTP::Stream;
+use AnyEvent::HTTP::Stream;
 use JSON::XS;
 use Data::Dumper;
 use DBI;
 use DBD::mysql;
 use v5.10;
-use POSIX qw(ceil floor);
+use POSIX qw(ceil strftime);
 use String::CRC32;
 use Data::HexDump;
+use Try::Tiny;
 
 # The following constants are from rzl-hausbus/firmware-pinpad/main.c:
 # a CRC32 checksum needs 4 bytes
@@ -27,6 +31,10 @@ use constant PIN_SIZE => 3;
 use constant PINS_PER_BLOCK => 6;
 
 use constant BLOCK_SIZE => ((PINS_PER_BLOCK * PIN_SIZE) + CRC32_SIZE);
+
+# We use an own object to *NOT* use utf8. JSON::XS should just treat everything
+# as raw bytes.
+my $json = JSON::XS->new()->ascii(1);
 
 # Returns EEPROM contents (as binary string) for the given array of 6-digit
 # PINs.
@@ -73,21 +81,114 @@ sub generate_updates {
     return @updates;
 }
 
-my $eeprom = generate_eeprom(332211, 123456, 332211, 998866);
-print "target checksum: ";
-my $u = substr($eeprom, 0, 4);
-    while (length($u) > 0) {
-        my $b = substr($u, 0, 1, '');
-        print '\x' . sprintf("%02x", int(unpack("C", $b)));
-    }
-    print "\n";
-
-my @updates = generate_updates($eeprom);
-for my $u (@updates) {
-    print q|perl -Ilib -MBusmaster -E 'Busmaster->new()->send("pinpad", "|;
-    while (length($u) > 0) {
-        my $b = substr($u, 0, 1, '');
-        print '\x' . sprintf("%02x", int(unpack("C", $b)));
-    }
-    print qq|")'\n|;
+sub prefix {
+    strftime("%x %X", gmtime())
 }
+
+sub crc_to_hex {
+    sprintf('0x%04x', unpack('N', $_[0]))
+}
+
+my @waiting_updates = ();
+my $retry = 0;
+
+# Pushes the first waiting update to the Pinpad controller.
+sub push_update {
+    if (@waiting_updates == 0) {
+        say prefix . "All updates pushed successfully.";
+        return;
+    }
+
+    say prefix . "Pushing update to Pinpad controller (" .
+        (scalar @waiting_updates) . " updates remaining)";
+    my $update = $waiting_updates[0];
+    http_post 'http://localhost:9999/send/pinpad',
+        $json->encode({ payload => $update }),
+        sub {
+            my ($data, $headers) = @_;
+            my $status = $headers->{Status};
+            if ($status ne '200') {
+                say prefix . "Server returned HTTP $status: $headers->{Reason}";
+                return;
+            }
+            my $reply;
+            try {
+                $reply = $json->decode($data);
+            } catch {
+                warn "Server returned invalid JSON";
+                return;
+            };
+            if ($reply->{status} ne 'ok') {
+                say prefix . "Server returned error: $reply->{status}";
+                return;
+            }
+
+            say prefix . "Update pushed to Pinpad via Hausbus";
+            # TODO: add timeout timer
+        };
+}
+
+my $stream;
+$stream = AnyEvent::HTTP::Stream->new(
+    url => 'http://localhost:9999/group/pinpad',
+    on_data => sub {
+        my ($data) = @_;
+
+        my $pkt = decode_json($data);
+        return unless exists $pkt->{payload};
+        my $payload = $pkt->{payload};
+
+        # The pinpad-controller broadcasts the CRC32 checksum of its EEPROM
+        # contents.
+        if ($payload =~ /^X /) {
+            # Ignore checksum broadcasts while we are updating the EEPROM.
+            return if @waiting_updates > 0;
+
+            # Generate the Pinpad and database CRC32.
+            my $pinpad_crc = crc_to_hex(substr($payload, 2, 4));
+            say prefix . "Connecting to MySQL database...";
+            my $db = DBI->connect(
+                'DBI:mysql:host=127.0.0.1;port=9977;database=nutzerdb',
+                'nutzerdb',
+                'GEHEIM',
+            ) or die "Could not connect to MySQL database: $!";
+            my $pins = $db->selectcol_arrayref(
+                q|SELECT pin FROM nutzer WHERE pin IS NOT NULL LIMIT 3|,
+                { Slice => {} });
+            my $eeprom = generate_eeprom(@$pins);
+            my $eeprom_crc = crc_to_hex(substr($eeprom, 0, 4));
+            say prefix . "Pinpad-Controller  EEPROM CRC32 is $pinpad_crc";
+            say prefix . "Database generated EEPROM CRC32 is $eeprom_crc";
+
+            # If the CRC32 checksums are equal, we are done.
+            return if ($eeprom_crc eq $pinpad_crc);
+
+            # Otherwise: Fill @waiting_updates and start updating.
+            @waiting_updates = generate_updates($eeprom);
+            push_update();
+        }
+
+        if ($payload =~ /^EEP /) {
+            my $status = substr($payload, 4);
+            say prefix . "EEPROM write command status: $status";
+            if ($status ne 'ACK') {
+                $retry++;
+                if ($retry > 5) {
+                    say prefix . "ERROR: EEPROM write failed more than five times.";
+                    say prefix . "Hausbus corruption is unlikely five times in a row.";
+                    say prefix . "This probably is a bug?";
+                    say prefix . "Exiting now, please fix this manually.";
+                    exit 1;
+                }
+                say prefix . "EEPROM write command failed. Re-trying ($retry/5)...";
+                push_update();
+            } else {
+                $retry = 0;
+                shift @waiting_updates;
+                push_update();
+            }
+        }
+    });
+
+say prefix . "pin-sync initialized...";
+AE::cv->recv
