@@ -204,7 +204,7 @@ sub run {
                     $cfg->{MySQL}->{pass},
                 ) or die "Could not connect to MySQL database: $!";
                 my $pins = $db->selectcol_arrayref(
-                    q|SELECT pin FROM nutzer WHERE pin IS NOT NULL LIMIT 9|,
+                    q|SELECT pin FROM nutzer WHERE pin IS NOT NULL|,
                     { Slice => {} });
                 my $eeprom = generate_eeprom(@$pins);
                 my $eeprom_crc = crc_to_hex(substr($eeprom, 0, 4));
