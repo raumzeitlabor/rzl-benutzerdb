@@ -46,7 +46,7 @@ do_start()
 		--background --exec $DAEMON --test > /dev/null \
 		|| return 1
 	start-stop-daemon --start --quiet --make-pidfile --pidfile $PIDFILE \
-		--background --chuid nobody:nogroup --exec $DAEMON -- $DAEMON_ARGS \
+		--background --chuid rzl:rzl --exec $DAEMON -- $DAEMON_ARGS \
 		|| return 2
 }
 
