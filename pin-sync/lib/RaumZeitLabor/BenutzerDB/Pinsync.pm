@@ -8,6 +8,7 @@ use strict;
 use warnings;
 # These modules are in core:
 use v5.10;
+use Sys::Syslog;
 use POSIX qw(ceil strftime);
 # These modules are not in core:
 use AnyEvent;
@@ -122,31 +123,31 @@ sub eliminate_updates {
         my $eeprom = generate_eeprom(@pins);
         my $eeprom_crc = crc_to_hex(substr($eeprom, 0, 4));
         if ($eeprom_crc eq $pinpad_crc) {
-            say prefix . "Generated EEPROM state for current CRC32";
+            syslog('info', "Generated EEPROM state for current CRC32");
 
             # Only keep updates which were not already pushed previously.
             my @updates = generate_updates($eeprom);
             my $before = scalar @waiting_updates;
             @waiting_updates = grep { !($_ ~~ @updates) } @waiting_updates;
             my $eliminated = $before - @waiting_updates;
-            say prefix . "Eliminated $eliminated redundant updates.";
+            syslog('info', "Eliminated $eliminated redundant updates.");
             return;
         }
     }
 
-    say prefix . "Could not generate EEPROM state for current CRC32.";
-    say prefix . "This hints EEPROM corruption on the Pinpad controller!";
+    syslog('info', "Could not generate EEPROM state for current CRC32.");
+    syslog('info', "This hints EEPROM corruption on the Pinpad controller!");
 }
 
 # Pushes the first waiting update to the Pinpad controller.
 sub push_update {
     if (@waiting_updates == 0) {
-        say prefix . "All updates pushed successfully.";
+        syslog('info', "All updates pushed successfully.");
         return;
     }
 
-    say prefix . "Pushing update to Pinpad controller (" .
-        (scalar @waiting_updates) . " updates remaining)";
+    syslog('info', "Pushing update to Pinpad controller (" .
+        (scalar @waiting_updates) . " updates remaining)");
     my $update = $waiting_updates[0];
     http_post 'http://' . $cfg->{Hausbus}->{host} . '/send/pinpad',
         $json->encode({ payload => $update }),
@@ -154,7 +155,7 @@ sub push_update {
             my ($data, $headers) = @_;
             my $status = $headers->{Status};
             if ($status ne '200') {
-                say prefix . "Server returned HTTP $status: $headers->{Reason}";
+                syslog('info', "Server returned HTTP $status: $headers->{Reason}");
                 return;
             }
             my $reply;
@@ -165,16 +166,19 @@ sub push_update {
                 return;
             };
             if ($reply->{status} ne 'ok') {
-                say prefix . "Server returned error: $reply->{status}";
+                syslog('info', "Server returned error: $reply->{status}");
                 return;
             }
 
-            say prefix . "Update pushed to Pinpad via Hausbus";
+            syslog('info', "Update pushed to Pinpad via Hausbus");
             # TODO: add timeout timer
         };
 }
 
 sub run {
+    openlog('pin-sync', 'pid', 'daemon');
+    syslog('info', 'Starting up');
+
     my $stream;
     $stream = AnyEvent::HTTP::Stream->new(
         url => 'http://' . $cfg->{Hausbus}->{host} . '/group/pinpad',
@@ -193,7 +197,7 @@ sub run {
 
                 # Generate the Pinpad and database CRC32.
                 my $pinpad_crc = crc_to_hex(substr($payload, 2, 4));
-                say prefix . "Connecting to MySQL database...";
+                syslog('info', "Connecting to MySQL database...");
                 my $db = DBI->connect(
                     $cfg->{MySQL}->{data_source},
                     $cfg->{MySQL}->{user},
@@ -204,8 +208,8 @@ sub run {
                     { Slice => {} });
                 my $eeprom = generate_eeprom(@$pins);
                 my $eeprom_crc = crc_to_hex(substr($eeprom, 0, 4));
-                say prefix . "Pinpad-Controller  EEPROM CRC32 is $pinpad_crc";
-                say prefix . "Database generated EEPROM CRC32 is $eeprom_crc";
+                syslog('info', "Pinpad-Controller  EEPROM CRC32 is $pinpad_crc");
+                syslog('info', "Database generated EEPROM CRC32 is $eeprom_crc");
 
                 # If the CRC32 checksums are equal, we are done.
                 return if ($eeprom_crc eq $pinpad_crc);
@@ -218,17 +222,17 @@ sub run {
 
             if ($payload =~ /^EEP /) {
                 my $status = substr($payload, 4);
-                say prefix . "EEPROM write command status: $status";
+                syslog('info', "EEPROM write command status: $status");
                 if ($status ne 'ACK') {
                     $retry++;
                     if ($retry > 5) {
-                        say prefix . "ERROR: EEPROM write failed more than five times.";
-                        say prefix . "Hausbus corruption is unlikely five times in a row.";
-                        say prefix . "This probably is a bug?";
-                        say prefix . "Exiting now, please fix this manually.";
+                        syslog('info', "ERROR: EEPROM write failed more than five times.");
+                        syslog('info', "Hausbus corruption is unlikely five times in a row.");
+                        syslog('info', "This probably is a bug?");
+                        syslog('info', "Exiting now, please fix this manually.");
                         exit 1;
                     }
-                    say prefix . "EEPROM write command failed. Re-trying ($retry/5)...";
+                    syslog('info', "EEPROM write command failed. Re-trying ($retry/5)...");
                     push_update();
                 } else {
                     $retry = 0;
@@ -238,7 +242,7 @@ sub run {
             }
         });
 
-    say prefix . "pin-sync initialized...";
+    syslog('info', "pin-sync initialized...");
     AE::cv->recv
 }
 
