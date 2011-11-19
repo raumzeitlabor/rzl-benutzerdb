@@ -1,0 +1,4 @@
+# Log all lines from pin-sync to /var/log/pin-sync.log (without syncing)
+# and discard them.
+:programname, isequal, "pin-sync"  -/var/log/pin-sync.log
+:programname, isequal, "pin-sync" ~

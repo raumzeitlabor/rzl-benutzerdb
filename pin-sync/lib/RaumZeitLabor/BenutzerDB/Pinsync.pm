@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+package RaumZeitLabor::BenutzerDB::Pinsync;
 # vim:ts=4:sw=4:expandtab
 # © 2011 Michael Stapelberg (see also: LICENSE)
 #
@@ -6,19 +6,21 @@
 
 use strict;
 use warnings;
-use DateTime;
+# These modules are in core:
+use v5.10;
+use POSIX qw(ceil strftime);
+# These modules are not in core:
 use AnyEvent;
 use AnyEvent::HTTP;
 use AnyEvent::HTTP::Stream;
 use JSON::XS;
-use Data::Dumper;
 use DBI;
 use DBD::mysql;
-use v5.10;
-use POSIX qw(ceil strftime);
 use String::CRC32;
-use Data::HexDump;
 use Try::Tiny;
+use YAML::Syck;
+
+our $VERSION = '1.0';
 
 # The following constants are from rzl-hausbus/firmware-pinpad/main.c:
 # a CRC32 checksum needs 4 bytes
@@ -35,6 +37,18 @@ use constant BLOCK_SIZE => ((PINS_PER_BLOCK * PIN_SIZE) + CRC32_SIZE);
 # We use an own object to *NOT* use utf8. JSON::XS should just treat everything
 # as raw bytes.
 my $json = JSON::XS->new()->ascii(1);
+my $cfg;
+if (-e 'pin-sync.yml') {
+    $cfg = LoadFile('pin-sync.yml');
+} elsif (-e '/etc/pin-sync.yml') {
+    $cfg = LoadFile('/etc/pin-sync.yml');
+} else {
+    die "Could not load ./pin-sync.yml or /etc/pin-sync.yml";
+}
+
+if (!exists($cfg->{Hausbus}) || !exists($cfg->{MySQL})) {
+    die "Configuration sections incomplete: need Hausbus and MySQL";
+}
 
 my @waiting_updates = ();
 my $retry = 0;
@@ -134,7 +148,7 @@ sub push_update {
     say prefix . "Pushing update to Pinpad controller (" .
         (scalar @waiting_updates) . " updates remaining)";
     my $update = $waiting_updates[0];
-    http_post 'http://localhost:9999/send/pinpad',
+    http_post 'http://' . $cfg->{Hausbus}->{host} . '/send/pinpad',
         $json->encode({ payload => $update }),
         sub {
             my ($data, $headers) = @_;
@@ -160,68 +174,101 @@ sub push_update {
         };
 }
 
-my $stream;
-$stream = AnyEvent::HTTP::Stream->new(
-    url => 'http://localhost:9999/group/pinpad',
-    on_data => sub {
-        my ($data) = @_;
+sub run {
+    my $stream;
+    $stream = AnyEvent::HTTP::Stream->new(
+        url => 'http://' . $cfg->{Hausbus}->{host} . '/group/pinpad',
+        on_data => sub {
+            my ($data) = @_;
 
-        my $pkt = decode_json($data);
-        return unless exists $pkt->{payload};
-        my $payload = $pkt->{payload};
+            my $pkt = decode_json($data);
+            return unless exists $pkt->{payload};
+            my $payload = $pkt->{payload};
 
-        # The pinpad-controller broadcasts the CRC32 checksum of its EEPROM
-        # contents.
-        if ($payload =~ /^X /) {
-            # Ignore checksum broadcasts while we are updating the EEPROM.
-            return if @waiting_updates > 0;
+            # The pinpad-controller broadcasts the CRC32 checksum of its EEPROM
+            # contents.
+            if ($payload =~ /^X /) {
+                # Ignore checksum broadcasts while we are updating the EEPROM.
+                return if @waiting_updates > 0;
 
-            # Generate the Pinpad and database CRC32.
-            my $pinpad_crc = crc_to_hex(substr($payload, 2, 4));
-            say prefix . "Connecting to MySQL database...";
-            my $db = DBI->connect(
-                'DBI:mysql:host=127.0.0.1;port=9977;database=nutzerdb',
-                'nutzerdb',
-                'GEHEIM',
-            ) or die "Could not connect to MySQL database: $!";
-            my $pins = $db->selectcol_arrayref(
-                q|SELECT pin FROM nutzer WHERE pin IS NOT NULL LIMIT 3|,
-                { Slice => {} });
-            my $eeprom = generate_eeprom(@$pins);
-            my $eeprom_crc = crc_to_hex(substr($eeprom, 0, 4));
-            say prefix . "Pinpad-Controller  EEPROM CRC32 is $pinpad_crc";
-            say prefix . "Database generated EEPROM CRC32 is $eeprom_crc";
+                # Generate the Pinpad and database CRC32.
+                my $pinpad_crc = crc_to_hex(substr($payload, 2, 4));
+                say prefix . "Connecting to MySQL database...";
+                my $db = DBI->connect(
+                    $cfg->{MySQL}->{data_source},
+                    $cfg->{MySQL}->{user},
+                    $cfg->{MySQL}->{pass},
+                ) or die "Could not connect to MySQL database: $!";
+                my $pins = $db->selectcol_arrayref(
+                    q|SELECT pin FROM nutzer WHERE pin IS NOT NULL LIMIT 9|,
+                    { Slice => {} });
+                my $eeprom = generate_eeprom(@$pins);
+                my $eeprom_crc = crc_to_hex(substr($eeprom, 0, 4));
+                say prefix . "Pinpad-Controller  EEPROM CRC32 is $pinpad_crc";
+                say prefix . "Database generated EEPROM CRC32 is $eeprom_crc";
 
-            # If the CRC32 checksums are equal, we are done.
-            return if ($eeprom_crc eq $pinpad_crc);
+                # If the CRC32 checksums are equal, we are done.
+                return if ($eeprom_crc eq $pinpad_crc);
 
-            # Otherwise: Fill @waiting_updates and start updating.
-            @waiting_updates = generate_updates($eeprom);
-            eliminate_updates($pinpad_crc, @$pins);
-            push_update();
-        }
-
-        if ($payload =~ /^EEP /) {
-            my $status = substr($payload, 4);
-            say prefix . "EEPROM write command status: $status";
-            if ($status ne 'ACK') {
-                $retry++;
-                if ($retry > 5) {
-                    say prefix . "ERROR: EEPROM write failed more than five times.";
-                    say prefix . "Hausbus corruption is unlikely five times in a row.";
-                    say prefix . "This probably is a bug?";
-                    say prefix . "Exiting now, please fix this manually.";
-                    exit 1;
-                }
-                say prefix . "EEPROM write command failed. Re-trying ($retry/5)...";
-                push_update();
-            } else {
-                $retry = 0;
-                shift @waiting_updates;
+                # Otherwise: Fill @waiting_updates and start updating.
+                @waiting_updates = generate_updates($eeprom);
+                eliminate_updates($pinpad_crc, @$pins);
                 push_update();
             }
-        }
-    });
 
-say prefix . "pin-sync initialized...";
-AE::cv->recv
+            if ($payload =~ /^EEP /) {
+                my $status = substr($payload, 4);
+                say prefix . "EEPROM write command status: $status";
+                if ($status ne 'ACK') {
+                    $retry++;
+                    if ($retry > 5) {
+                        say prefix . "ERROR: EEPROM write failed more than five times.";
+                        say prefix . "Hausbus corruption is unlikely five times in a row.";
+                        say prefix . "This probably is a bug?";
+                        say prefix . "Exiting now, please fix this manually.";
+                        exit 1;
+                    }
+                    say prefix . "EEPROM write command failed. Re-trying ($retry/5)...";
+                    push_update();
+                } else {
+                    $retry = 0;
+                    shift @waiting_updates;
+                    push_update();
+                }
+            }
+        });
+
+    say prefix . "pin-sync initialized...";
+    AE::cv->recv
+}
+
+1
+
+__END__
+
+
+=head1 NAME
+
+RaumZeitPinSync - Syncs PINs to the Pinpad controller EEPROM
+
+=head1 DESCRIPTION
+
+This module synchronizes our user-specific PINs to the Pinpad controller
+EEPROM.
+
+=head1 VERSION
+
+Version 1.0
+
+=head1 AUTHOR
+
+Michael Stapelberg, C<< <michael at stapelberg.de> >>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 Michael Stapelberg.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the BSD license.
+
+=cut
