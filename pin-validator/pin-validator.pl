@@ -69,4 +69,5 @@ sub validate_buffer {
     $buffer = '';
 }
 
+say "pin-validator initialized...";
 AE::cv->recv
