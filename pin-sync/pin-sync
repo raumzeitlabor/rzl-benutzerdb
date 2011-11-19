@@ -82,7 +82,7 @@ sub generate_updates {
 }
 
 sub prefix {
-    strftime("%x %X", gmtime())
+    strftime("%x %X - ", gmtime())
 }
 
 sub crc_to_hex {
