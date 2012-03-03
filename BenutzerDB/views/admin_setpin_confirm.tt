@@ -8,6 +8,6 @@ Du möchtest eine PIN für Benutzer <strong>„<% handle %>“</strong> zuweisen
 Bitte bestätige dies nochmal:
 </p>
 
-<form action="/BenutzerDB/admin/setpin/meh" method="post">
+<form action="/BenutzerDB/admin/setpin/<% handle %>" method="post">
 <input type="submit" value="PIN für <% handle %> zuweisen">
 </form>
