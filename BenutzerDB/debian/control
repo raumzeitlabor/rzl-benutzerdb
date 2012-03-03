@@ -1,0 +1,33 @@
+Source: raumzeitbenutzerdb
+Section: perl
+Priority: optional
+Maintainer: Michael Stapelberg <michael@midna.zekjur.net>
+Build-Depends: debhelper (>= 8)
+Build-Depends-Indep: libcrypt-saltedhash-perl,
+ libdancer-perl,
+ libdancer-plugin-database-perl,
+ libdancer-session-cookie-perl,
+ libplack-perl,
+ libtemplate-perl,
+ libyaml-perl,
+ perl,
+ perl-modules,
+ twiggy
+Standards-Version: 3.9.2
+Homepage: http://search.cpan.org/dist/RaumZeitBenutzerDB/
+
+Package: raumzeitbenutzerdb
+Architecture: all
+Depends: ${misc:Depends}, ${perl:Depends},
+ libcrypt-saltedhash-perl,
+ libdancer-perl,
+ libdancer-plugin-database-perl,
+ libdancer-session-cookie-perl,
+ libplack-perl,
+ libtemplate-perl,
+ libyaml-perl,
+ twiggy
+Description: Benutzer-Datenbank für das Pinpad und andere Dienste
+ (no description was found)
+ .
+ This description was automagically extracted from the module by dh-make-perl.
