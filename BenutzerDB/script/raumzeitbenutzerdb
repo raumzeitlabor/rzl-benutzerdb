@@ -1,0 +1,30 @@
+#!/usr/bin/env perl
+# vim:ts=4:sw=4:expandtab
+#
+# RaumZeitBenutzerDB
+#
+# © 2011-2012 Michael Stapelberg, see LICENSE
+#
+
+BEGIN {
+    use FindBin;
+    # Are we running in development mode or in production?
+    if ($FindBin::Bin =~ m,/script/?$,) {
+        use lib "$FindBin::Bin/../lib";
+        $ENV{DANCER_APPDIR} ||= "$FindBin::Bin/../";
+        $ENV{DANCER_CONFDIR} ||= "$FindBin::Bin/../";
+    } else {
+        $ENV{DANCER_ENVIRONMENT} = "production";
+
+        # Start with /usr/share/benutzerdb as appdir by default.
+        $ENV{DANCER_APPDIR} ||= '/usr/share/benutzerdb';
+
+        # And use /etc/benutzerdb/config.yml by default.
+        $ENV{DANCER_CONFDIR} ||= '/etc/benutzerdb';
+    }
+}
+
+use Dancer;
+use RaumZeitLabor::BenutzerDB;
+
+dance;
