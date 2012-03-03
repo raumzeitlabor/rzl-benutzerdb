@@ -90,7 +90,7 @@ get '/BenutzerDB/my/pin' => sub {
     my $user = session('user');
 
     my $entry = $db->quick_select('nutzer', { handle => $user });
-    my @admins = $db->quick_select('nutzer', { admin => 1 });
+    my @admins = $db->quick_select('nutzer', { admin => 1 }, { order_by => 'handle' });
     my $pin = $entry->{pin};
     return template 'mypin', {
         user => $user,
