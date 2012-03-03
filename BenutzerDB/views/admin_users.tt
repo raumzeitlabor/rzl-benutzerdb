@@ -1,0 +1,22 @@
+<p>
+Benutzer (Stand jetzt):
+</p>
+
+<table width="100%" id="users_table">
+<tr>
+<th>Nickname</th>
+<th>PIN?</th>
+</tr>
+<% FOR user in users %>
+<tr>
+<td><% user.handle %></td>
+<td>
+<% IF user.pin %>
+Ja
+<% ELSE %>
+Nein
+<% END %>
+</td>
+</tr>
+<% END %>
+</table>

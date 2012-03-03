@@ -95,6 +95,19 @@ get '/BenutzerDB/my/pin' => sub {
     return template 'mypin', { user => $user, pin => $pin, admin => is_admin($user) };
 };
 
+get '/BenutzerDB/admin/users' => sub {
+    my $db = database;
+    my $user = session('user');
+
+    my @entries = $db->quick_select('nutzer', {});
+
+    return template 'admin_users', {
+        user => $user,
+        admin => is_admin($user),
+        users => \@entries
+    };
+};
+
 get '/BenutzerDB/register' => sub {
     template 'register';
 };

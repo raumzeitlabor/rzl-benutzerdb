@@ -72,3 +72,24 @@ body, input {
 #loginfields input {
 	width: 100%;
 }
+
+th {
+	text-align: left;
+}
+
+#users_table td, #users_table th {
+	padding: 0.25em;
+}
+
+#users_table th {
+	background-color: #333;
+	color: white;
+}
+
+#users_table tr:nth-child(odd) {
+	background-color: #eee;
+}
+
+#users_table tr:nth-child(even) {
+	background-color: #fff;
+}
