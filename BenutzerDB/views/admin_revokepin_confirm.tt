@@ -1,0 +1,13 @@
+<h2>PIN revoken</h2>
+
+<p>
+Du möchtest die PIN von Benutzer <strong>„<% handle %>“</strong> revoken.
+</p>
+
+<p>
+Bitte bestätige dies nochmal:
+</p>
+
+<form action="/BenutzerDB/admin/revokepin/<% handle %>" method="post">
+<input type="submit" value="PIN von <% handle %> revoken">
+</form>

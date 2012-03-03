@@ -24,6 +24,7 @@ Angemeldet als <strong><% vars.user %></strong> (<a href="/BenutzerDB/logout">Ab
 <% END %>
 <% IF vars.is_admin %>
 <li><a href="/BenutzerDB/admin/setpin">PIN zuweisen</a></li>
+<li><a href="/BenutzerDB/admin/revokepin">PIN revoken</a></li>
 <li><a href="/BenutzerDB/admin/users">Benutzerliste</a></li>
 <% END %>
 </ul>

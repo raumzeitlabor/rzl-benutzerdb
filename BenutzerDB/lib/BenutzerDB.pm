@@ -91,44 +91,29 @@ any '/BenutzerDB/logout' => sub {
 
 get '/BenutzerDB/my/pin' => sub {
     my $db = database;
-    my $user = session('user');
-
-    my $entry = $db->quick_select('nutzer', { handle => $user });
+    my $entry = $db->quick_select('nutzer', { handle => session('user') });
     my @admins = $db->quick_select('nutzer', { admin => 1 }, { order_by => 'handle' });
     my $pin = $entry->{pin};
     return template 'mypin', { pin => $pin, admins => \@admins };
 };
 
 get '/BenutzerDB/admin/users' => sub {
-    my $db = database;
-    my $user = session('user');
-
-    my @entries = $db->quick_select('nutzer', {}, { order_by => 'handle' });
-
+    my @entries = database->quick_select('nutzer', {}, { order_by => 'handle' });
     return template 'admin_users', { users => \@entries };
 };
 
 get '/BenutzerDB/admin/setpin' => sub {
-    my $db = database;
-    my $user = session('user');
-
-    my @entries = $db->quick_select('nutzer', { pin => undef });
-
+    my @entries = database->quick_select('nutzer', { pin => undef });
     return template 'admin_setpin', { users => \@entries };
 };
 
 get '/BenutzerDB/admin/setpin/:handle' => sub {
-    my $db = database;
-    my $user = session('user');
-
-    my $entry = $db->quick_select('nutzer', { handle => param('handle') });
-
+    my $entry = database->quick_select('nutzer', { handle => param('handle') });
     return template 'admin_setpin_confirm', { handle => $entry->{handle} };
 };
 
 post '/BenutzerDB/admin/setpin/:handle' => sub {
     my $db = database;
-    my $user = session('user');
     my $handle = param('handle');
 
     # Verify that the user doesn’t have a PIN yet — we don’t want to overwrite
@@ -163,6 +148,22 @@ post '/BenutzerDB/admin/setpin/:handle' => sub {
     $db->quick_update('nutzer', { handle => $handle }, { pin => $pindigits });
 
     return template 'admin_setpin_success', { handle => $handle };
+};
+
+get '/BenutzerDB/admin/revokepin' => sub {
+    my @entries = database->quick_select('nutzer', {});
+    return template 'admin_revokepin', { users => \@entries };
+};
+
+get '/BenutzerDB/admin/revokepin/:handle' => sub {
+    my $entry = database->quick_select('nutzer', { handle => param('handle') });
+    return template 'admin_revokepin_confirm', { handle => $entry->{handle} };
+};
+
+post '/BenutzerDB/admin/revokepin/:handle' => sub {
+    my $handle = param('handle');
+    database->quick_update('nutzer', { handle => $handle }, { pin => undef });
+    return template 'admin_revokepin_success', { handle => $handle };
 };
 
 get '/BenutzerDB/register' => sub {
