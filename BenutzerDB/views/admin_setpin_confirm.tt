@@ -1,0 +1,13 @@
+<h2>PIN zuweisen</h2>
+
+<p>
+Du möchtest eine PIN für Benutzer <strong>„<% handle %>“</strong> zuweisen.
+</p>
+
+<p>
+Bitte bestätige dies nochmal:
+</p>
+
+<form action="/BenutzerDB/admin/setpin/meh" method="post">
+<input type="submit" value="PIN für <% handle %> zuweisen">
+</form>

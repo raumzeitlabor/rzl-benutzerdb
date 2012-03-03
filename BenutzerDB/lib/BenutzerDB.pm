@@ -108,6 +108,83 @@ get '/BenutzerDB/admin/users' => sub {
     };
 };
 
+get '/BenutzerDB/admin/setpin' => sub {
+    my $db = database;
+    my $user = session('user');
+
+    my @entries = $db->quick_select('nutzer', { pin => undef });
+
+    return template 'admin_setpin', {
+        user => $user,
+        admin => is_admin($user),
+        users => \@entries,
+    };
+};
+
+get '/BenutzerDB/admin/setpin/:handle' => sub {
+    my $db = database;
+    my $user = session('user');
+
+    my $entry = $db->quick_select('nutzer', { handle => param('handle') });
+
+    return template 'admin_setpin_confirm', {
+        user => $user,
+        admin => is_admin($user),
+        handle => $entry->{handle},
+    };
+};
+
+post '/BenutzerDB/admin/setpin/:handle' => sub {
+    my $db = database;
+    my $user = session('user');
+    my $handle = param('handle');
+
+    # Verify that the user doesn’t have a PIN yet — we don’t want to overwrite
+    # an existing PIN, no matter what.
+    my $entry = $db->quick_select('nutzer', { handle => $handle });
+    if (!defined($entry)) {
+        return template 'error', {
+            user => $user,
+            admin => is_admin($user),
+            errormessage => 'No such handle',
+        };
+    }
+
+    if (defined($entry->{pin})) {
+        return template 'error', {
+            user => $user,
+            admin => is_admin($user),
+            errormessage => 'This user already has a PIN.',
+        };
+    }
+
+    # Generate a PIN by using the better random data (/dev/random).
+    my $pin_bad = 1;
+    my $pindigits = undef;
+    while ($pin_bad) {
+        open(my $rndfh, '<', '/dev/random') or die "Could not open /dev/random: $!";
+        # Read 6 bytes, then take each byte modulo 10 to get digits.
+        my $pinbytes;
+        read($rndfh, $pinbytes, 6);
+        $pindigits = join '', map { ord($_) % 10 } split //, $pinbytes;
+
+        # Blacklist a few sequences which nerds are likely to try.
+        $pin_bad = ($pindigits =~ /23/ ||
+                    $pindigits =~ /42/ ||
+                    $pindigits =~ /1337/ ||
+                    $pindigits =~ /17/);
+        close($rndfh);
+    }
+
+    $db->quick_update('nutzer', { handle => $handle }, { pin => $pindigits });
+
+    return template 'admin_setpin_success', {
+        user => $user,
+        admin => is_admin($user),
+        handle => $handle,
+    };
+};
+
 get '/BenutzerDB/register' => sub {
     template 'register';
 };
