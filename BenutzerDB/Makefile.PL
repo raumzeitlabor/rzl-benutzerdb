@@ -1,21 +1,29 @@
+#!/usr/bin/env perl
+# vim:ts=4:sw=4:expandtab
 use strict;
 use warnings;
-use ExtUtils::MakeMaker;
+use inc::Module::Install;
 
-WriteMakefile(
-    NAME                => 'BenutzerDB',
-    AUTHOR              => q{YOUR NAME <youremail@example.com>},
-    VERSION_FROM        => 'lib/BenutzerDB.pm',
-    ABSTRACT            => 'YOUR APPLICATION ABSTRACT',
-    ($ExtUtils::MakeMaker::VERSION >= 6.3002
-      ? ('LICENSE'=> 'perl')
-      : ()),
-    PL_FILES            => {},
-    PREREQ_PM => {
-        'Test::More' => 0,
-        'YAML'       => 0,
-        'Dancer'     => 1.2003,
-    },
-    dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean               => { FILES => 'BenutzerDB-*' },
-);
+name     'RaumZeitBenutzerDB';
+all_from 'lib/BenutzerDB.pm';
+
+requires 'YAML';
+requires 'Dancer';
+requires 'Dancer::Plugin::Database';
+requires 'Dancer::Session::Cookie';
+requires 'Template';
+requires 'Plack';
+requires 'Crypt::SaltedHash';
+requires 'Twiggy';
+
+postamble <<'END_OF_MAKEFILE';
+install:: extra_install
+pure_install:: extra_install
+install_vendor:: extra_install
+
+extra_install::
+	install -d $(DESTDIR)/etc/
+	install -m 640 config.yml.example $(DESTDIR)/etc/config.yml
+END_OF_MAKEFILE
+
+WriteAll;

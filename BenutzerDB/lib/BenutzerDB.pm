@@ -5,7 +5,7 @@ use Dancer::Plugin::Database;
 use Data::Dumper;
 use Crypt::SaltedHash;
 
-our $VERSION = '0.1';
+our $VERSION = '1.0';
 
 my $login_url = qr#^/BenutzerDB/my(/?|$)#;
 my $admin_url = qr#^/BenutzerDB/admin/?#;
@@ -200,3 +200,32 @@ post '/BenutzerDB/register' => sub {
 };
 
 true;
+
+__END__
+
+
+=head1 NAME
+
+RaumZeitBenutzerDB - Benutzer-Datenbank für das Pinpad und andere Dienste
+
+=head1 DESCRIPTION
+
+Dieses Modul ist das Webinterface zur Benutzer-Datenbank für das Pinpad und
+andere Dienste (Kassensystem, ...).
+
+=head1 VERSION
+
+Version 1.0
+
+=head1 AUTHOR
+
+Michael Stapelberg, C<< <michael at stapelberg.de> >>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011-2012 Michael Stapelberg.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the BSD license.
+
+=cut
