@@ -7,11 +7,21 @@ use Crypt::SaltedHash;
 
 our $VERSION = '0.1';
 
+my $login_url = qr#^/BenutzerDB/my(/?|$)#;
+my $admin_url = qr#^/BenutzerDB/admin/?#;
+
 before sub {
-    # Redirect to login page if necessary (for /my and /admin)
-    if (not session('user') and
-        (request->path_info =~ q,^/BenutzerDB/my(/?|$), or
-         request->path_info =~ q,^/BenutzerDB/admin(/?|$),)) {
+    my $user = session('user');
+    my $logged_in = defined($user);
+    my $is_admin = ($logged_in ? is_admin($user) : 0);
+
+    # Redirect to login page if necessary:
+    # Either the user is not logged in but requests a URL for which you need to
+    # be logged in (/BenutzerDB/my/*).
+    # Or the user is not an admin but requests a URL for which you need to be
+    # an admin (/BenutzerDB/admin/*).
+    if ((!$logged_in && request->path_info =~ $login_url) ||
+        (!$is_admin && request->path_info =~ $admin_url)) {
         var requested_path => request->path_info;
         request->path_info('/BenutzerDB/');
     }
