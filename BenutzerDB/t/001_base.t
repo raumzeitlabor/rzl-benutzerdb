@@ -2,4 +2,4 @@ use Test::More tests => 1;
 use strict;
 use warnings;
 
-use_ok 'BenutzerDB';
+use_ok 'RaumZeitLabor::BenutzerDB';

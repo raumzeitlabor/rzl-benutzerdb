@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 # the order is important
-use BenutzerDB;
+use RaumZeitLabor::BenutzerDB;
 use Dancer::Test;
 
 route_exists [GET => '/BenutzerDB/'], 'a route handler is defined for /';

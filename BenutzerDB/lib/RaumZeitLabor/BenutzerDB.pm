@@ -1,5 +1,5 @@
 # vim:ts=4:sw=4:expandtab
-package BenutzerDB;
+package RaumZeitLabor::BenutzerDB;
 use Dancer ':syntax';
 use Dancer::Plugin::Database;
 use Data::Dumper;

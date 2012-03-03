@@ -5,7 +5,7 @@ use warnings;
 use inc::Module::Install;
 
 name     'RaumZeitBenutzerDB';
-all_from 'lib/BenutzerDB.pm';
+all_from 'lib/RaumZeitLabor/BenutzerDB.pm';
 
 requires 'YAML';
 requires 'Dancer';
