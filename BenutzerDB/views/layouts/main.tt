@@ -22,6 +22,10 @@ Angemeldet als <strong><% user %></strong> (<a href="/BenutzerDB/logout">Abmelde
 <% IF user %>
 <li><a href="/BenutzerDB/my/pin">PIN anzeigen</a></li>
 <% END %>
+<% IF admin %>
+<li><a href="/BenutzerDB/admin/setpin">PIN zuweisen</a></li>
+<li><a href="/BenutzerDB/admin/users">Benutzerliste</a></li>
+<% END %>
 </ul>
 </div>
 </div>

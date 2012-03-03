@@ -9,7 +9,8 @@ CREATE TABLE nutzer (
 
 	realname TEXT NULL,
 	email TEXT NULL,
-	credit DECIMAL(6, 2) DEFAULT 0 NOT NULL
+	credit DECIMAL(6, 2) DEFAULT 0 NOT NULL,
+	admin BOOL DEFAULT FALSE
 );
 
 --

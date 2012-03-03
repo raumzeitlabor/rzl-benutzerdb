@@ -17,6 +17,18 @@ before sub {
     }
 };
 
+=head2 is_admin($handle)
+
+Returns true if and only if the given $handle has admin rights.
+
+=cut
+sub is_admin {
+    my ($user) = @_;
+
+    my $entry = database->quick_select('nutzer', { handle => $user });
+    return 0 unless defined($entry);
+    return $entry->{admin};
+}
 
 get '/BenutzerDB/css/style.css' => sub {
     send_file 'css/style.css';
@@ -34,7 +46,7 @@ get '/BenutzerDB/' => sub {
     if (not session('user')) {
         return template 'login';
     } else {
-        return template 'index', { user => session('user') };
+        return template 'index', { user => session('user'), admin => is_admin(session('user')) };
     }
 };
 
@@ -70,7 +82,7 @@ get '/BenutzerDB/my/pin' => sub {
     my $entry = $db->quick_select('nutzer', { handle => $user });
     debug 'entry = ' . Dumper($entry);
     my $pin = $entry->{pin};
-    return template 'mypin', { user => $user, pin => $pin };
+    return template 'mypin', { user => $user, pin => $pin, admin => is_admin($user) };
 };
 
 get '/BenutzerDB/register' => sub {
