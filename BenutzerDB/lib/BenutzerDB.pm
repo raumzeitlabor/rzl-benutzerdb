@@ -10,7 +10,7 @@ our $VERSION = '0.1';
 my $login_url = qr#^/BenutzerDB/my(/?|$)#;
 my $admin_url = qr#^/BenutzerDB/admin/?#;
 
-before sub {
+hook before => sub {
     my $user = session('user');
     my $logged_in = defined($user);
     my $is_admin = ($logged_in ? is_admin($user) : 0);
