@@ -103,8 +103,11 @@ get '/BenutzerDB/admin/users' => sub {
 };
 
 get '/BenutzerDB/admin/setpin' => sub {
-    my @entries = database->quick_select('nutzer', { pin => undef });
-    return template 'admin_setpin', { users => \@entries };
+    my $entries = database->selectall_arrayref('SELECT * FROM nutzer WHERE pin IS NULL ORDER BY handle', { Slice => {} });
+    # Enable this line as soon as the bug in Dancer::Plugin::Database is fixed:
+    # https://github.com/bigpresh/Dancer-Plugin-Database/pull/27
+    #my @entries = database->quick_select('nutzer', { pin => undef }, { order_by => 'handle' });
+    return template 'admin_setpin', { users => $entries };
 };
 
 get '/BenutzerDB/admin/setpin/:handle' => sub {
@@ -151,8 +154,10 @@ post '/BenutzerDB/admin/setpin/:handle' => sub {
 };
 
 get '/BenutzerDB/admin/revokepin' => sub {
-    my @entries = database->quick_select('nutzer', {});
-    return template 'admin_revokepin', { users => \@entries };
+    my $entries = database->selectall_arrayref(
+        'SELECT * FROM nutzer WHERE pin IS NOT NULL ORDER BY handle',
+        { Slice => {} });
+    return template 'admin_revokepin', { users => $entries };
 };
 
 get '/BenutzerDB/admin/revokepin/:handle' => sub {
