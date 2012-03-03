@@ -99,7 +99,7 @@ get '/BenutzerDB/admin/users' => sub {
     my $db = database;
     my $user = session('user');
 
-    my @entries = $db->quick_select('nutzer', {});
+    my @entries = $db->quick_select('nutzer', {}, { order_by => 'handle' });
 
     return template 'admin_users', {
         user => $user,
