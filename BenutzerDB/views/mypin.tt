@@ -1,3 +1,5 @@
+<h2>Deine PIN</h2>
+
 <% IF pin %>
 <p>
 Deine derzeitige PIN lautet:
@@ -8,7 +10,16 @@ Deine derzeitige PIN lautet:
 </p>
 <% ELSE %>
 <p>
-Du hast derzeit keine PIN. Bitte wende dich an einen der Admins, damit dir eine
-PIN erzeugt wird.
+Du hast noch keine PIN.
+</p>
+
+<p>
+Jedes Mitglied des RaumZeitLabor e.V. bekommt eine PIN.<br>
+Bitte wende dich an einen der folgenden Admins, damit dir eine PIN zugewiesen wird:<br>
+<ul>
+<% FOR admin IN admins %>
+<li><% admin.handle %> (<% admin.realname %>, <a href="mailto:<% admin.email %>"><% admin.email %></a>)</li>
+<% END %>
+</ul>
 </p>
 <% END %>

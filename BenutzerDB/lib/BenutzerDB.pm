@@ -90,9 +90,14 @@ get '/BenutzerDB/my/pin' => sub {
     my $user = session('user');
 
     my $entry = $db->quick_select('nutzer', { handle => $user });
-    debug 'entry = ' . Dumper($entry);
+    my @admins = $db->quick_select('nutzer', { admin => 1 });
     my $pin = $entry->{pin};
-    return template 'mypin', { user => $user, pin => $pin, admin => is_admin($user) };
+    return template 'mypin', {
+        user => $user,
+        pin => $pin,
+        admin => is_admin($user),
+        admins => \@admins
+    };
 };
 
 get '/BenutzerDB/admin/users' => sub {
