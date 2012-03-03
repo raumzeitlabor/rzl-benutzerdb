@@ -11,18 +11,18 @@
 <img style="margin-right: 10px" alt="RZL-Logo" src="/BenutzerDB/images/logo.png" align="left" width="120px" height="60px">
 <h1>Benutzerdatenbank</h1>
 <p id="logintext" style="clear: both">
-<% IF user %>
-Angemeldet als <strong><% user %></strong> (<a href="/BenutzerDB/logout">Abmelden</a>)
+<% IF vars.logged_in %>
+Angemeldet als <strong><% vars.user %></strong> (<a href="/BenutzerDB/logout">Abmelden</a>)
 <% END %>
 </p>
 <div id="menubox">
 <div id="menu">
 <ul>
 <li><a href="/BenutzerDB/">Startseite</a></li>
-<% IF user %>
+<% IF vars.logged_in %>
 <li><a href="/BenutzerDB/my/pin">PIN anzeigen</a></li>
 <% END %>
-<% IF admin %>
+<% IF vars.is_admin %>
 <li><a href="/BenutzerDB/admin/setpin">PIN zuweisen</a></li>
 <li><a href="/BenutzerDB/admin/users">Benutzerliste</a></li>
 <% END %>

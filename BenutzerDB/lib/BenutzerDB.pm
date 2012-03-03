@@ -15,6 +15,10 @@ before sub {
     my $logged_in = defined($user);
     my $is_admin = ($logged_in ? is_admin($user) : 0);
 
+    vars->{user} = $user;
+    vars->{logged_in} = $logged_in;
+    vars->{is_admin} = $is_admin;
+
     # Redirect to login page if necessary:
     # Either the user is not logged in but requests a URL for which you need to
     # be logged in (/BenutzerDB/my/*).
@@ -56,7 +60,7 @@ get '/BenutzerDB/' => sub {
     if (not session('user')) {
         return template 'login';
     } else {
-        return template 'index', { user => session('user'), admin => is_admin(session('user')) };
+        return template 'index';
     }
 };
 
@@ -92,12 +96,7 @@ get '/BenutzerDB/my/pin' => sub {
     my $entry = $db->quick_select('nutzer', { handle => $user });
     my @admins = $db->quick_select('nutzer', { admin => 1 }, { order_by => 'handle' });
     my $pin = $entry->{pin};
-    return template 'mypin', {
-        user => $user,
-        pin => $pin,
-        admin => is_admin($user),
-        admins => \@admins
-    };
+    return template 'mypin', { pin => $pin, admins => \@admins };
 };
 
 get '/BenutzerDB/admin/users' => sub {
@@ -106,11 +105,7 @@ get '/BenutzerDB/admin/users' => sub {
 
     my @entries = $db->quick_select('nutzer', {}, { order_by => 'handle' });
 
-    return template 'admin_users', {
-        user => $user,
-        admin => is_admin($user),
-        users => \@entries
-    };
+    return template 'admin_users', { users => \@entries };
 };
 
 get '/BenutzerDB/admin/setpin' => sub {
@@ -119,11 +114,7 @@ get '/BenutzerDB/admin/setpin' => sub {
 
     my @entries = $db->quick_select('nutzer', { pin => undef });
 
-    return template 'admin_setpin', {
-        user => $user,
-        admin => is_admin($user),
-        users => \@entries,
-    };
+    return template 'admin_setpin', { users => \@entries };
 };
 
 get '/BenutzerDB/admin/setpin/:handle' => sub {
@@ -132,11 +123,7 @@ get '/BenutzerDB/admin/setpin/:handle' => sub {
 
     my $entry = $db->quick_select('nutzer', { handle => param('handle') });
 
-    return template 'admin_setpin_confirm', {
-        user => $user,
-        admin => is_admin($user),
-        handle => $entry->{handle},
-    };
+    return template 'admin_setpin_confirm', { handle => $entry->{handle} };
 };
 
 post '/BenutzerDB/admin/setpin/:handle' => sub {
@@ -148,19 +135,11 @@ post '/BenutzerDB/admin/setpin/:handle' => sub {
     # an existing PIN, no matter what.
     my $entry = $db->quick_select('nutzer', { handle => $handle });
     if (!defined($entry)) {
-        return template 'error', {
-            user => $user,
-            admin => is_admin($user),
-            errormessage => 'No such handle',
-        };
+        return template 'error', { errormessage => 'No such handle' };
     }
 
     if (defined($entry->{pin})) {
-        return template 'error', {
-            user => $user,
-            admin => is_admin($user),
-            errormessage => 'This user already has a PIN.',
-        };
+        return template 'error', { errormessage => 'This user already has a PIN.' };
     }
 
     # Generate a PIN by using the better random data (/dev/random).
@@ -183,11 +162,7 @@ post '/BenutzerDB/admin/setpin/:handle' => sub {
 
     $db->quick_update('nutzer', { handle => $handle }, { pin => $pindigits });
 
-    return template 'admin_setpin_success', {
-        user => $user,
-        admin => is_admin($user),
-        handle => $handle,
-    };
+    return template 'admin_setpin_success', { handle => $handle };
 };
 
 get '/BenutzerDB/register' => sub {
