@@ -111,14 +111,14 @@ post '/BenutzerDB/my/sshkeys/add' => sub {
             pubkey => $pubkey
         };
     }
-    if (!($pubkey =~ /^ssh-([a-z]+) ([A-Za-z0-9\/\+]+)==/)) {
+    if (!($pubkey =~ /^ssh-([a-z]+) ([A-Za-z0-9\/\+]+)=*/)) {
         return template 'mysshkeys_add_error', {
             errormessage => 'Key is not valid base64.',
             pubkey => $pubkey
         };
     }
-    my ($type, $base64) = ($pubkey =~ /^ssh-([a-z]+) ([A-Za-z0-9\/\+]+)==/);
-    my $sanitized_key = "ssh-$type $base64==";
+    my ($type, $base64, $trailing) = ($pubkey =~ /^ssh-([a-z]+) ([A-Za-z0-9\/\+]+)(=*)/);
+    my $sanitized_key = "ssh-$type $base64$trailing";
     database->quick_insert('sshpubkeys', { handle => session('user'), pubkey => $sanitized_key });
     redirect '/BenutzerDB/my/sshkeys/tuer';
 };
