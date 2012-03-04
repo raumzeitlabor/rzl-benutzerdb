@@ -8,7 +8,7 @@
 </head>
 <body>
 <div id="header">
-<img style="margin-right: 10px" alt="RZL-Logo" src="/BenutzerDB/images/logo.png" align="left" width="120px" height="60px">
+<img style="margin-right: 10px" alt="RZL-Logo" src="/BenutzerDB/images/logo.png" align="left" width="120px" height="60px" />
 <h1>Benutzerdatenbank</h1>
 <p id="logintext" style="clear: both">
 <% IF vars.logged_in %>
