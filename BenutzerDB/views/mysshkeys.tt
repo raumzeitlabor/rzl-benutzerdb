@@ -37,7 +37,7 @@ print join(' <span class="lineesc">\</span><br>', @parts);
 
 <p>
 Hier kannst du deinen SSH public key eintragen. Er muss im Format
-"<code>ssh-rsa …==</code>" sein, genau wie wenn du ihn in eine
+"<code>ssh-rsa …</code>" sein, genau wie wenn du ihn in eine
 <code>~/.ssh/authorized_keys</code>-Datei speichern würdest:
 </p>
 
