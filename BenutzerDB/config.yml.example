@@ -35,11 +35,6 @@ plugins:
       AutoCommit: 1
     on_connect_do: ["SET NAMES 'utf8'", "SET CHARACTER SET 'utf8'" ]
 
-
-# template: "template_toolkit"
-# engines:
-#   template_toolkit:
-#     encoding:  'utf8'
-#     start_tag: '[%'
-#     end_tag:   '%]'
-
+engines:
+  template_toolkit:
+    EVAL_PERL: 1
