@@ -12,7 +12,7 @@ my @parts;
 for (my $c = 0; $c < (length($pubkey) / 80); $c++) {
     push @parts, substr($pubkey, $c * 80, 80);
 }
-print join(' <span class="lineesc">\</span><br>', @parts);
+print join(' <span class="lineesc">\</span><br />', @parts);
 <% END %>
 </pre>
 
