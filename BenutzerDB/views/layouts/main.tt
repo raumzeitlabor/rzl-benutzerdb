@@ -21,6 +21,9 @@ Angemeldet als <strong><% vars.user %></strong> (<a href="/BenutzerDB/logout">Ab
 <li><a href="/BenutzerDB/">Startseite</a></li>
 <% IF vars.logged_in %>
 <li><a href="/BenutzerDB/my/pin">PIN anzeigen</a></li>
+  <% IF vars.has_pin %>
+    <li><a href="/BenutzerDB/my/sshkeys/tuer">Tür via SSH</a></li>
+  <% END %>
 <% END %>
 <% IF vars.is_admin %>
 <li><a href="/BenutzerDB/admin/setpin">PIN zuweisen</a></li>

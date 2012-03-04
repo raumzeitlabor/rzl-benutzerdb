@@ -13,11 +13,20 @@ my $admin_url = qr#^/BenutzerDB/admin/?#;
 hook before => sub {
     my $user = session('user');
     my $logged_in = defined($user);
-    my $is_admin = ($logged_in ? is_admin($user) : 0);
+    my $is_admin = 0;
+    my $has_pin = 0;
 
+    if ($logged_in) {
+        my $entry = database->quick_select('nutzer', { handle => $user });
+        $is_admin = $entry->{admin};
+        $has_pin = defined($entry->{pin});
+    }
+
+    # Save the state in vars so that we can use it in templates.
     vars->{user} = $user;
     vars->{logged_in} = $logged_in;
     vars->{is_admin} = $is_admin;
+    vars->{has_pin} = $has_pin;
 
     # Redirect to login page if necessary:
     # Either the user is not logged in but requests a URL for which you need to
@@ -30,19 +39,6 @@ hook before => sub {
         request->path_info('/BenutzerDB/');
     }
 };
-
-=head2 is_admin($handle)
-
-Returns true if and only if the given $handle has admin rights.
-
-=cut
-sub is_admin {
-    my ($user) = @_;
-
-    my $entry = database->quick_select('nutzer', { handle => $user });
-    return 0 unless defined($entry);
-    return $entry->{admin};
-}
 
 get '/BenutzerDB/css/style.css' => sub {
     send_file 'css/style.css';
@@ -95,6 +91,61 @@ get '/BenutzerDB/my/pin' => sub {
     my @admins = $db->quick_select('nutzer', { admin => 1 }, { order_by => 'handle' });
     my $pin = $entry->{pin};
     return template 'mypin', { pin => $pin, admins => \@admins };
+};
+
+get '/BenutzerDB/my/sshkeys/:what' => sub {
+    # The what parameter in the URL is there to distinguish between different
+    # things, should that ever become necessary.
+    my @keys = database->quick_select('sshpubkeys', { handle => session('user') });
+    return template 'mysshkeys', { pubkeys => \@keys };
+};
+
+post '/BenutzerDB/my/sshkeys/add' => sub {
+    # We need to validate the key carefully. It will end up verbatim in the
+    # .ssh/authorized_keys on the firebox and might allow local user access
+    # (shouldn’t be critical, but nevertheless!).
+    my $pubkey = param('pubkey');
+    if (!($pubkey =~ /^ssh-([a-z]+)/)) {
+        return template 'mysshkeys_add_error', {
+            errormessage => 'Key does not start with ssh-rsa or similar.',
+            pubkey => $pubkey
+        };
+    }
+    if (!($pubkey =~ /^ssh-([a-z]+) ([A-Za-z0-9\/\+]+)==/)) {
+        return template 'mysshkeys_add_error', {
+            errormessage => 'Key is not valid base64.',
+            pubkey => $pubkey
+        };
+    }
+    my ($type, $base64) = ($pubkey =~ /^ssh-([a-z]+) ([A-Za-z0-9\/\+]+)==/);
+    my $sanitized_key = "ssh-$type $base64==";
+    database->quick_insert('sshpubkeys', { handle => session('user'), pubkey => $sanitized_key });
+    redirect '/BenutzerDB/my/sshkeys/tuer';
+};
+
+get '/BenutzerDB/my/sshkeys/remove/:keyid' => sub {
+    # Verify that this SSH key actually belongs to the user :).
+    my $entry = database->quick_select('sshpubkeys', { keyid => param('keyid') });
+    if (!defined($entry) || $entry->{handle} ne session('user')) {
+        send_error("Not allowed", 403);
+    } else {
+        return template 'mysshkeys_remove_confirm', {
+            keyid => param('keyid'),
+            pubkey => $entry->{pubkey},
+        };
+    }
+};
+
+post '/BenutzerDB/my/sshkeys/remove/:keyid' => sub {
+    # The following query is a no-op if the specified key doesn’t belong to the
+    # user.
+    database->quick_delete('sshpubkeys', { keyid => param('keyid'), handle => session('user') });
+    redirect '/BenutzerDB/my/sshkeys/tuer';
+};
+
+get '/BenutzerDB/sshkeys/:what' => sub {
+    my @keys = database->quick_select('sshpubkeys', {});
+    return to_json \@keys;
 };
 
 get '/BenutzerDB/admin/users' => sub {

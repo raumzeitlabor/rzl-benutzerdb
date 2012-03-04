@@ -1,0 +1,21 @@
+<h2>SSH public-keys zum Öffnen der Tür</h2>
+
+<p>
+Dein Key ist nicht valide:
+</p>
+
+<pre>
+<% PERL %>
+# Format the pubkey nicely
+my $pubkey = $stash->get('pubkey');
+my @parts;
+for (my $c = 0; $c < (length($pubkey) / 80); $c++) {
+    push @parts, substr($pubkey, $c * 80, 80);
+}
+print join(' <span class="lineesc">\</span><br>', @parts);
+<% END %>
+</pre>
+
+<p>
+Fehler: <% errormessage %>
+</p>

@@ -14,6 +14,15 @@ CREATE TABLE nutzer (
 );
 
 --
+-- SSH public keys
+--
+CREATE TABLE sshpubkeys (
+	keyid INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	handle VARCHAR(32) REFERENCES nutzer(handle),
+	pubkey TEXT NOT NULL
+);
+
+--
 -- Registrierte Geräte
 --
 CREATE TABLE devices (

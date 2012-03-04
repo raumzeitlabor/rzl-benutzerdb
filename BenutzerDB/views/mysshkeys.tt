@@ -1,0 +1,55 @@
+<h2>SSH public-keys zum Öffnen der Tür</h2>
+
+<% IF vars.has_pin %>
+<p>
+Du kannst die Tür des RaumZeitLabors alternativ zur PIN auch via SSH öffnen,
+z.B. von deinem Smartphone aus. Melde dich dazu wie folgt an:
+</p>
+
+<p>
+<strong>Hostname</strong>: tuer.rzl.so<br>
+<strong>Port</strong>: 2322<br>
+<strong>Username</strong>: tuer<br>
+</p>
+
+<h3>Deine Keys</h3>
+
+<ol>
+<% FOR pubkey IN pubkeys %>
+<li>
+<pre>
+<% PERL %>
+# Format the pubkey nicely
+my $pubkey = $stash->get('pubkey')->{'pubkey'};
+my @parts;
+for (my $c = 0; $c < (length($pubkey) / 80); $c++) {
+    push @parts, substr($pubkey, $c * 80, 80);
+}
+print join(' <span class="lineesc">\</span><br>', @parts);
+<% END %>
+</pre>
+<a href="/BenutzerDB/my/sshkeys/remove/<% pubkey.keyid %>">Diesen Key entfernen</a>
+</li>
+<% END %>
+</ol>
+
+<h3>Neuen Key hinzufügen</h3>
+
+<p>
+Hier kannst du deinen SSH public key eintragen. Er muss im Format
+"<code>ssh-rsa …==</code>" sein, genau wie wenn du ihn in eine
+<code>~/.ssh/authorized_keys</code>-Datei speichern würdest:
+</p>
+
+<form action="/BenutzerDB/my/sshkeys/add" method="post">
+<textarea name="pubkey" cols="80" rows="6">
+</textarea><br>
+<input type="submit" value="Key hinzufügen">
+</form>
+
+<% ELSE %>
+<p>
+Du hast noch keine PIN. Bevor du via SSH die Tür öffnen kannst, musst du dir
+eine PIN zuweisen lassen.
+</p>
+<% END %>

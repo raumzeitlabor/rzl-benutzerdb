@@ -9,6 +9,13 @@ Folgende Aktionen stehen dir links im Menü zur Verfügung:
   Zeigt dir die PIN an, mit der du den Raum betreten kannst, sofern dir eine
   eingerichtet wurde. Momentan können PINs nur nach Anfrage vergeben werden.
 </li>
+<% IF vars.has_pin %>
+<li>
+  <strong>Tür via SSH:</strong><br>
+  Hier kannst du SSH-Keys hinterlegen, mit welchen du die Tür via SSH öffnen
+  und schließen kannst (z.B. von deinem Smartphone aus).
+</li>
+<% END %>
 </ul>
 
 <p>
