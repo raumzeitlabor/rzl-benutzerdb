@@ -5,7 +5,7 @@ Folgende Aktionen stehen dir links im Menü zur Verfügung:
 
 <ul id="welcomelist">
 <li>
-  <strong>PIN anzeigen:</strong><br>
+  <strong>PIN anzeigen:</strong><br />
   Zeigt dir die PIN an, mit der du den Raum betreten kannst, sofern dir eine
   eingerichtet wurde. Momentan können PINs nur nach Anfrage vergeben werden.
 </li>
