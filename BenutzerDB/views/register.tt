@@ -12,7 +12,7 @@ mindestens 6 Zeichen.
 <% END %>
 
 <form action="/BenutzerDB/register" method="post">
-Nutzername: <input type="text" name="reg_username"><br>
-Passwort: <input type="password" name="reg_password"><br>
+Nutzername: <input type="text" name="reg_username"><br />
+Passwort: <input type="password" name="reg_password"><br />
 <input type="submit">
 </form>
