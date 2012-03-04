@@ -15,6 +15,7 @@ requires 'Template';
 requires 'Plack';
 requires 'Crypt::SaltedHash';
 requires 'Twiggy';
+requires 'JSON';
 
 install_script 'script/raumzeitbenutzerdb';
 

@@ -10,6 +10,7 @@ Build-Depends-Indep: libcrypt-saltedhash-perl,
  libplack-perl,
  libtemplate-perl,
  libyaml-perl,
+ libjson-perl,
  perl,
  perl-modules,
  twiggy
@@ -26,6 +27,7 @@ Depends: ${misc:Depends}, ${perl:Depends},
  libplack-perl,
  libtemplate-perl,
  libyaml-perl,
+ libjson-perl,
  twiggy
 Description: Benutzer-Datenbank fuer das Pinpad und andere Dienste
  (no description was found)
