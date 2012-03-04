@@ -14,8 +14,8 @@ Du hast noch keine PIN.
 </p>
 
 <p>
-Jedes Mitglied des RaumZeitLabor e.V. bekommt eine PIN.<br>
-Bitte wende dich an einen der folgenden Admins, damit dir eine PIN zugewiesen wird:<br>
+Jedes Mitglied des RaumZeitLabor e.V. bekommt eine PIN.<br />
+Bitte wende dich an einen der folgenden Admins, damit dir eine PIN zugewiesen wird:<br />
 <ul>
 <% FOR admin IN admins %>
 <li><% admin.handle %> (<% admin.realname %>, <a href="mailto:<% admin.email %>"><% admin.email %></a>)</li>
