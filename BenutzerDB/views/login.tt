@@ -9,8 +9,8 @@ Bitte melde dich an:
 <% END %>
 
 <form action="/BenutzerDB/login" method="post">
-Nutzername: <input type="text" name="username"><br>
-Passwort: <input type="password" name="password"><br>
+Nutzername: <input type="text" name="username"><br />
+Passwort: <input type="password" name="password"><br />
 <input type="submit">
 </form>
 
