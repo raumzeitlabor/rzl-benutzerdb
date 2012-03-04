@@ -1,0 +1,3 @@
+# see ssh-pubkey-sync --help
+PUBKEYSYNC_OPTIONS=""
+PUBKEYSYNC_FORMAT="%(pubkey)s"

@@ -1,0 +1,153 @@
+#!/usr/bin/env perl
+# vim:ts=4:sw=4:expandtab
+#
+# RaumZeitBenutzerDB - ssh-pubkey-sync
+#
+# © 2012 Michael Stapelberg, see LICENSE
+#
+
+use strict;
+use warnings;
+use feature qw(say);
+# These modules ship with Perl:
+use Getopt::Long;
+use Sys::Syslog;
+use Digest::SHA qw(sha1_hex);
+# These modules dont ship with Perl:
+#use FindBin;
+use AnyEvent;
+use AnyEvent::HTTP;
+use JSON::XS;
+use Text::Sprintf::Named;
+use Try::Tiny;
+#use lib "$FindBin::Bin/../lib";
+
+our $VERSION = '1.0';
+
+my $url;
+my $outputfile;
+my $format = '%(pubkey)s';
+
+GetOptions(
+    'url=s' => \$url,
+    'outputfile=s' => \$outputfile,
+    'format=s' => \$format,
+    'version' => sub {
+        say "ssh-pubkey-sync v$VERSION";
+        exit 0;
+    },
+    'help' => sub {
+        say q|
+ssh-pubkey-sync: repeatedly syncs SSH public keys from BenutzerDB
+
+Syntax:
+ssh-pubkey-sync --url <url> --outputfile <path> [--format <fmt>]
+
+Example:
+$ ssh-pubkey-sync \\
+  --url http://blackbox.raumzeitlabor.de/BenutzerDB/sshkeys/tuer \\
+  --outputfile /home/tuer/.ssh/authorized_keys \\
+  --format 'command="/usr/bin/tuer-oeffnen.pl %(handle)s" %(pubkey)s'|;
+        exit 0;
+    }
+);
+
+if (!defined($url) || $url eq '' ||
+    !defined($outputfile) || $outputfile eq '') {
+    say STDERR q|ERROR: You need to specify --url and --outputfile|;
+    say STDERR q|See ssh-pubkey-sync --help|;
+    exit 1;
+}
+
+sub save_keys {
+    my ($keys) = @_;
+    my $formatter = Text::Sprintf::Named->new({ fmt => $format });
+
+    my $fh;
+    if (!open($fh, '>', $outputfile)) {
+        syslog('err', "Could not open $outputfile for writing: $!");
+        return;
+    }
+    for my $key (@$keys) {
+        say $fh $formatter->format({ args => {
+            handle => $key->{handle},
+            pubkey => $key->{pubkey}
+        } });
+    }
+    close($fh);
+}
+
+# Cancellation guard object for the HTTP request. Will contain the cancellation
+# guard for the latest request only, so old requests will automatically be
+# cancelled after 60 seconds.
+my $http_guard;
+
+# The SHA1 hex sum of the last (encoded) contents. If the contents don’t
+# change, we don’t update the file at all.
+my $last_sha1 = "";
+
+my $t;
+# Request a sync every 60 seconds
+$t = AnyEvent->timer(
+    after => 1.0,
+    interval => 60.0,
+    cb => sub {
+        $http_guard = http_get $url, timeout => 30, sub {
+            my ($body, $hdr) = @_;
+            if ($hdr->{Status} =~ /^2/) {
+                # Skip this update if nothing changed.
+                my $sha1 = sha1_hex($body);
+                return if $last_sha1 eq $sha1;
+                $last_sha1 = $sha1;
+
+                my $keys;
+                try {
+                    $keys = decode_json($body);
+                } catch {
+                    syslog('err', "Error decoding JSON from $url: $_");
+                    $keys = undef;
+                };
+                return unless defined($keys);
+
+                save_keys($keys);
+                syslog('info', "Updating $outputfile (SHA-1 $sha1)");
+            } else {
+                syslog('err', "Error getting $url: $hdr->{Status} $hdr->{Reason}");
+            }
+        };
+    });
+
+
+openlog('ssh-pubkey-sync', 'pid', 'daemon');
+syslog('info', 'Starting up');
+
+AnyEvent->condvar->recv;
+
+__END__
+
+
+=head1 NAME
+
+RaumZeitSSHPubkeySync - Synchronisiert Pubkeys aus der BenutzerDB
+
+=head1 DESCRIPTION
+
+Dieses Script synchronisiert Pubkeys aus der BenutzerDB in eine
+authorized_keys-Datei.
+
+=head1 VERSION
+
+Version 1.0
+
+=head1 AUTHOR
+
+Michael Stapelberg, C<< <michael at stapelberg.de> >>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2012 Michael Stapelberg.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the BSD license.
+
+=cut

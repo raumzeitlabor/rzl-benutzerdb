@@ -1,0 +1,27 @@
+Source: raumzeitsshpubkeysync
+Section: perl
+Priority: optional
+Maintainer: Michael Stapelberg <michael@midna.zekjur.net>
+Build-Depends: debhelper (>= 8)
+Build-Depends-Indep: libanyevent-http-perl,
+ libanyevent-perl,
+ libjson-xs-perl,
+ libtext-sprintf-named-perl,
+ libtry-tiny-perl,
+ perl,
+ perl-modules
+Standards-Version: 3.9.2
+Homepage: http://search.cpan.org/dist/RaumZeitSSHPubkeySync/
+
+Package: raumzeitsshpubkeysync
+Architecture: all
+Depends: ${misc:Depends}, ${perl:Depends},
+ libanyevent-http-perl,
+ libanyevent-perl,
+ libjson-xs-perl,
+ libtext-sprintf-named-perl,
+ libtry-tiny-perl
+Description: Synchronisiert Pubkeys aus der BenutzerDB
+ (no description was found)
+ .
+ This description was automagically extracted from the module by dh-make-perl.
