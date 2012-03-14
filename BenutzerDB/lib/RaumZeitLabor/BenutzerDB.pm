@@ -5,7 +5,7 @@ use Dancer::Plugin::Database;
 use Data::Dumper;
 use Crypt::SaltedHash;
 
-our $VERSION = '1.0';
+our $VERSION = '1.1';
 
 my $login_url = qr#^/BenutzerDB/my(/?|$)#;
 my $admin_url = qr#^/BenutzerDB/admin/?#;
@@ -144,8 +144,19 @@ post '/BenutzerDB/my/sshkeys/remove/:keyid' => sub {
 };
 
 get '/BenutzerDB/sshkeys/:what' => sub {
-    my @keys = database->quick_select('sshpubkeys', {});
-    return to_json \@keys;
+    my $keys = database->selectall_arrayref(q|
+        SELECT
+            k.handle,
+            k.keyid,
+            k.pubkey
+        FROM
+            sshpubkeys AS k LEFT JOIN
+            nutzer AS n ON k.handle = n.handle
+        WHERE
+            n.pin IS NOT NULL|
+        , { Slice => {} });
+
+    return to_json $keys;
 };
 
 get '/BenutzerDB/admin/users' => sub {
