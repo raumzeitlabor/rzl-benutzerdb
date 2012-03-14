@@ -2,7 +2,8 @@
 
 override_dh_auto_install:
 	dh_auto_install
-	rm debian/raumzeitbenutzerdb/usr/lib/perl/*/perllocal.pod
+	rm -rf debian/raumzeitbenutzerdb/usr/lib/perl
+	rm -rf debian/raumzeitbenutzerdb/usr/lib/perl5
 
 %:
 	dh $@
