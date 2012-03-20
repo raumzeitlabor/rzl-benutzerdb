@@ -67,8 +67,6 @@ post '/BenutzerDB/login' => sub {
     my $pass = params->{password};
     my $db = database;
 
-    debug "login attempt with user = $user and pass = $pass";
-
     my $entry = $db->quick_select('nutzer', { handle => $user });
     if (!defined($entry) ||
         !Crypt::SaltedHash->validate($entry->{passwort}, $pass)) {
