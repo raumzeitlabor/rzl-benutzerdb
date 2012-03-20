@@ -14,6 +14,11 @@ CREATE TABLE nutzer (
 );
 
 --
+-- View auf die Hashes, auf die mehr Benutzer Zugriff haben
+--
+CREATE VIEW nutzer_hashesonly AS SELECT id, handle, passwort FROM nutzer;
+
+--
 -- SSH public keys
 --
 CREATE TABLE sshpubkeys (
@@ -48,6 +53,10 @@ CREATE TABLE leases (
 --
 CREATE TABLE tuerstatus (status VARCHAR(1));
 
+--
+-- the read-only user can only SELECT on our view
+--
+GRANT SELECT ON nutzer_hashesonly TO nutzerdb_ro;
 
 
  - Handle
