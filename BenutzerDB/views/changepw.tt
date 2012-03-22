@@ -1,0 +1,17 @@
+<h2>Passwort ändern</h2>
+
+<form action="/BenutzerDB/changepw" method="post">
+<fieldset>
+<legend>Passwort ändern</legend>
+<label for="oldpw">Altes Passwort:</label>
+<input type="password" name="oldpw" id="oldpw" placeholder="Altes Passwort">
+<br>
+<label for="newpw">Neues Passwort:</label>
+<input type="password" name="newpw" id="newpw" placeholder="Neues Passwort">
+<br>
+<label for="newpw2">Neues Passwort (Bestätigung):</label>
+<input type="password" name="newpw2" id="newpw2" placeholder="Neues Passwort (Bestätigung)">
+<br>
+<input type="submit" value="Ändern!">
+</fieldset>
+</form>

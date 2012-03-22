@@ -93,3 +93,24 @@ th {
 #users_table tr:nth-child(even) {
 	background-color: #fff;
 }
+
+fieldset {
+	padding: 1em;
+}
+
+fieldset br {
+	clear: both;
+}
+
+fieldset {
+	border: 0;
+}
+
+label {
+	width: 35%;
+	float: left;
+	text-align: right;
+	margin-right: 0.5em;
+	padding-top: 0.2em;
+	margin-bottom: 1em;
+}

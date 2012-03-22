@@ -72,7 +72,7 @@ post '/BenutzerDB/login' => sub {
         !Crypt::SaltedHash->validate($entry->{passwort}, $pass)) {
         return template 'login', { error => 'Falscher Username/Password' };
     }
-    
+
     session user => $user;
 
     redirect '/BenutzerDB/';
@@ -81,6 +81,40 @@ post '/BenutzerDB/login' => sub {
 any '/BenutzerDB/logout' => sub {
     session user => undef;
     redirect '/BenutzerDB/';
+};
+
+get '/BenutzerDB/changepw' => sub {
+    return template 'changepw';
+};
+
+post '/BenutzerDB/changepw' => sub {
+    my $db = database;
+    my $old = params->{oldpw};
+    my $new = params->{newpw};
+    my $new2 = params->{newpw2};
+    my $handle = session('user');
+
+    my $entry = $db->quick_select('nutzer', { handle => $handle });
+    if (!defined($entry) ||
+        !Crypt::SaltedHash->validate($entry->{passwort}, $old)) {
+        return template 'error', { errormessage => 'Falscher Username/Password' };
+    }
+
+    if ($new eq '') {
+        return template 'error', { errormessage => 'Kein neues Passwort angegeben' };
+    }
+
+    if ($new ne $new2) {
+        return template 'error', { errormessage => 'Altes und neues Passwort stimmen nicht überein' };
+    }
+
+    my $csh = Crypt::SaltedHash->new(algorithm => 'SHA-1');
+    $csh->add($new);
+    my $hash = $csh->generate;
+
+    $db->quick_update('nutzer', { handle => $handle }, { passwort => $hash });
+
+    return template 'changepw_success';
 };
 
 get '/BenutzerDB/my/pin' => sub {

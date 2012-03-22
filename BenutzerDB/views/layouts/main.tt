@@ -19,6 +19,7 @@ Angemeldet als <strong><% vars.user %></strong> (<a href="/BenutzerDB/logout">Ab
 <div id="menu">
 <ul>
 <li><a href="/BenutzerDB/">Startseite</a></li>
+<li><a href="/BenutzerDB/changepw">Passwort ändern</a></li>
 <% IF vars.logged_in %>
 <li><a href="/BenutzerDB/my/pin">PIN anzeigen</a></li>
   <% IF vars.has_pin %>
