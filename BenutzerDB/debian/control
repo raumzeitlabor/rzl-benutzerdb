@@ -11,6 +11,7 @@ Build-Depends-Indep: libcrypt-saltedhash-perl,
  libtemplate-perl,
  libyaml-perl,
  libjson-perl,
+ libmodule-install-perl,
  perl,
  perl-modules,
  twiggy

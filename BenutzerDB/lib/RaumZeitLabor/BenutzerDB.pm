@@ -5,7 +5,7 @@ use Dancer::Plugin::Database;
 use Data::Dumper;
 use Crypt::SaltedHash;
 
-our $VERSION = '1.1';
+our $VERSION = '1.2';
 
 my $login_url = qr#^/BenutzerDB/my(/?|$)#;
 my $admin_url = qr#^/BenutzerDB/admin/?#;
@@ -345,7 +345,7 @@ andere Dienste (Kassensystem, ...).
 
 =head1 VERSION
 
-Version 1.0
+Version 1.2
 
 =head1 AUTHOR
 
