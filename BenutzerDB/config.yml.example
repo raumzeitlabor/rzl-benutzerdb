@@ -2,6 +2,11 @@
 # env-related settings should go to environments/$env.yml
 # all the settings in this file will be loaded at Dancer's startup.
 
+# HTTP basic authentication credentials which are used for getting pins
+# (for use only by the pinpad controller)
+pins_user: "foo"
+pins_pass: "bar"
+
 # Your application's name
 appname: "BenutzerDB"
 

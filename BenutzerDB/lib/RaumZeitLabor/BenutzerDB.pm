@@ -191,6 +191,37 @@ get '/BenutzerDB/sshkeys/:what' => sub {
     return to_json $keys;
 };
 
+get '/BenutzerDB/pins/:what' => sub {
+    my $http_auth = request->env->{HTTP_AUTHORIZATION};
+    if (defined($http_auth) && $http_auth =~ /^Basic (.*)$/) {
+        my ($user, $password) = split(/:/, (MIME::Base64::decode($1) || ':'));
+        if (!defined($user) ||
+            !defined($password) ||
+            $user ne setting('pins_user') ||
+            $password ne setting('pins_pass')) {
+            status 401;
+            header 'WWW-Authenticate' => 'Basic realm="Password Required"';
+            return 'Authorization required';
+        }
+    } else {
+        status 401;
+        header 'WWW-Authenticate' => 'Basic realm="Password Required"';
+        return 'Authorization required';
+    }
+
+    my $pins = database->selectall_arrayref(q|
+        SELECT
+            handle,
+            pin
+        FROM
+            nutzer
+        WHERE pin IS NOT NULL
+        ORDER BY id ASC|,
+        { Slice => {} });
+
+    return to_json $pins;
+};
+
 get '/BenutzerDB/admin/users' => sub {
     my @entries = database->quick_select('nutzer', {}, { order_by => 'handle' });
     return template 'admin_users', { users => \@entries };
