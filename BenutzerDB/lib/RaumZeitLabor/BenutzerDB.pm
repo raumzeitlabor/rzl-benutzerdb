@@ -309,6 +309,10 @@ post '/BenutzerDB/register' => sub {
     my $pass = params->{reg_password};
     my $db = database;
 
+    if (length($user) < 1) {
+        return template 'register', { error => 'Nutzername zu kurz' };
+    }
+
     if (length($pass) < 6) {
         return template 'register', { error => 'Passwort zu kurz' };
     }
