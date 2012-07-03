@@ -1,12 +1,11 @@
-<p>
-Benutzer (Stand jetzt):
-</p>
 
-<table width="100%" id="users_table">
+<table width="50%" class="table table-bordered table-striped" style="width: 50%">
+<thead>
 <tr>
 <th>Nickname</th>
 <th>PIN?</th>
 </tr>
+</thead>
 <% FOR user in users %>
 <tr>
 <td><% user.handle %></td>

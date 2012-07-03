@@ -44,8 +44,16 @@ get '/BenutzerDB/css/style.css' => sub {
     send_file 'css/style.css';
 };
 
+get '/BenutzerDB/css/bootstrap.css' => sub {
+    send_file 'css/bootstrap.css';
+};
+
 get '/BenutzerDB/images/logo.png' => sub {
     send_file 'images/logo.png';
+};
+
+get '/BenutzerDB/images/logowhite.png' => sub {
+    send_file 'images/logowhite.png';
 };
 
 #
@@ -54,9 +62,9 @@ get '/BenutzerDB/images/logo.png' => sub {
 #
 get '/BenutzerDB/' => sub {
     if (not session('user')) {
-        return template 'login';
+        return template 'login', {}, { layout => 'login' };
     } else {
-        return template 'index';
+        return template 'index', { title => 'Willkommen' };
     }
 };
 
@@ -70,7 +78,7 @@ post '/BenutzerDB/login' => sub {
     my $entry = $db->quick_select('nutzer', { handle => $user });
     if (!defined($entry) ||
         !Crypt::SaltedHash->validate($entry->{passwort}, $pass)) {
-        return template 'login', { error => 'Falscher Username/Password' };
+        return template 'login', { error => 'Falscher Username/Password' }, { layout => 'login' };
     }
 
     session user => $user;
@@ -84,7 +92,7 @@ any '/BenutzerDB/logout' => sub {
 };
 
 get '/BenutzerDB/changepw' => sub {
-    return template 'changepw';
+    return template 'changepw', { title => 'Passwort ändern' };
 };
 
 post '/BenutzerDB/changepw' => sub {
@@ -122,14 +130,14 @@ get '/BenutzerDB/my/pin' => sub {
     my $entry = $db->quick_select('nutzer', { handle => session('user') });
     my @admins = $db->quick_select('nutzer', { admin => 1 }, { order_by => 'handle' });
     my $pin = $entry->{pin};
-    return template 'mypin', { pin => $pin, admins => \@admins };
+    return template 'mypin', { title => 'Deine PIN', pin => $pin, admins => \@admins };
 };
 
 get '/BenutzerDB/my/sshkeys/:what' => sub {
     # The what parameter in the URL is there to distinguish between different
     # things, should that ever become necessary.
     my @keys = database->quick_select('sshpubkeys', { handle => session('user') });
-    return template 'mysshkeys', { pubkeys => \@keys };
+    return template 'mysshkeys', { title => 'SSH public-keys zum Öffnen der Tür', pubkeys => \@keys };
 };
 
 post '/BenutzerDB/my/sshkeys/add' => sub {
@@ -224,7 +232,7 @@ get '/BenutzerDB/pins/:what' => sub {
 
 get '/BenutzerDB/admin/users' => sub {
     my @entries = database->quick_select('nutzer', {}, { order_by => 'handle' });
-    return template 'admin_users', { users => \@entries };
+    return template 'admin_users', { title => 'Benutzerliste', users => \@entries };
 };
 
 get '/BenutzerDB/admin/setpin' => sub {
@@ -232,7 +240,7 @@ get '/BenutzerDB/admin/setpin' => sub {
     # Enable this line as soon as the bug in Dancer::Plugin::Database is fixed:
     # https://github.com/bigpresh/Dancer-Plugin-Database/pull/27
     #my @entries = database->quick_select('nutzer', { pin => undef }, { order_by => 'handle' });
-    return template 'admin_setpin', { users => $entries };
+    return template 'admin_setpin', { title => 'PIN zuweisen', users => $entries };
 };
 
 get '/BenutzerDB/admin/setpin/:handle' => sub {
@@ -282,7 +290,7 @@ get '/BenutzerDB/admin/revokepin' => sub {
     my $entries = database->selectall_arrayref(
         'SELECT * FROM nutzer WHERE pin IS NOT NULL ORDER BY handle',
         { Slice => {} });
-    return template 'admin_revokepin', { users => $entries };
+    return template 'admin_revokepin', { title => 'PIN revoken', users => $entries };
 };
 
 get '/BenutzerDB/admin/revokepin/:handle' => sub {
@@ -297,29 +305,29 @@ post '/BenutzerDB/admin/revokepin/:handle' => sub {
 };
 
 get '/BenutzerDB/register' => sub {
-    template 'register';
+    template 'register', { title => 'Registration' };
 };
 
 post '/BenutzerDB/register' => sub {
     if (!exists params->{reg_username} ||
         !exists params->{reg_password}) {
-        return template 'register', { error => 'Nutzername/Passwort fehlen' };
+        return template 'register', { title => 'Registration', error => 'Nutzername/Passwort fehlen' };
     }
     my $user = params->{reg_username};
     my $pass = params->{reg_password};
     my $db = database;
 
     if (length($user) < 1) {
-        return template 'register', { error => 'Nutzername zu kurz' };
+        return template 'register', { title => 'Registration', error => 'Nutzername zu kurz' };
     }
 
     if (length($pass) < 6) {
-        return template 'register', { error => 'Passwort zu kurz' };
+        return template 'register', { title => 'Registration', error => 'Passwort zu kurz' };
     }
 
     my $entry = $db->quick_select('nutzer', { handle => $user });
     if (defined($entry)) {
-        return template 'register', { error => 'Nutzername schon vergeben!' };
+        return template 'register', { title => 'Registration', error => 'Nutzername schon vergeben!' };
     }
 
     my $csh = Crypt::SaltedHash->new(algorithm => 'SHA-1');

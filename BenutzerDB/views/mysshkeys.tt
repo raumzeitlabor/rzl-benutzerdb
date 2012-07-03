@@ -1,7 +1,5 @@
-<h2>SSH public-keys zum Öffnen der Tür</h2>
-
 <% IF vars.has_pin %>
-<p>
+<p style="line-height: 125%; width: 75%">
 Du kannst die Tür des RaumZeitLabors alternativ zur PIN auch via SSH öffnen,
 z.B. von deinem Smartphone aus. Melde dich dazu wie folgt an:
 </p>
@@ -12,41 +10,39 @@ z.B. von deinem Smartphone aus. Melde dich dazu wie folgt an:
 <strong>Username</strong>: tuer<br />
 </p>
 
-<h3>Deine Keys</h3>
+<h2 style="margin-top: 1em; margin-bottom: 1em">Deine Keys</h2>
 
 <ol>
 <% FOR pubkey IN pubkeys %>
-<li>
-<pre>
-<% PERL %>
-# Format the pubkey nicely
-my $pubkey = $stash->get('pubkey')->{'pubkey'};
-my @parts;
-for (my $c = 0; $c < (length($pubkey) / 80); $c++) {
-    push @parts, substr($pubkey, $c * 80, 80);
-}
-print join(' <span class="lineesc">\</span><br>', @parts);
-<% END %>
-</pre>
-<a href="/BenutzerDB/my/sshkeys/remove/<% pubkey.keyid %>">Diesen Key entfernen</a>
+<li style="margin-bottom: 2em">
+<pre><% pubkey.pubkey %></pre>
+<a href="/BenutzerDB/my/sshkeys/remove/<% pubkey.keyid %>">Obigen Key entfernen</a>
 </li>
 <% END %>
 </ol>
 
-<h3>Neuen Key hinzufügen</h3>
+<h2 style="margin-top: 1em; margin-bottom: 1em">Neuen Key hinzufügen</h2>
 
-<p>
+<p style="line-height: 125%">
 Hier kannst du deinen SSH public key eintragen. Er muss im Format
-"<code>ssh-rsa …</code>" sein, genau wie wenn du ihn in eine
+<code>ssh-rsa …</code> sein, genau wie wenn du ihn in eine
 <code>~/.ssh/authorized_keys</code>-Datei speichern würdest:
 </p>
 
-<form action="/BenutzerDB/my/sshkeys/add" method="post">
-<textarea name="pubkey" cols="80" rows="6">
+<form action="/BenutzerDB/my/sshkeys/add" method="post" class="form-horizontal" style="margin-top: 2em">
+<fieldset>
+<div class="control-group">
+<label class="control-label" for="pubkey">SSH-Key:</label>
+<div class="controls">
+<textarea name="pubkey" id="pubkey" cols="80" rows="6" class="input-xlarge">
 </textarea><br>
-<input type="submit" value="Key hinzufügen">
+</div>
+</div>
+<div class="form-actions">
+<input type="submit" value="Key hinzufügen" class="btn btn-primary">
+</div>
+</fieldset>
 </form>
-
 <% ELSE %>
 <p>
 Du hast noch keine PIN. Bevor du via SSH die Tür öffnen kannst, musst du dir

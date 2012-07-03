@@ -4,18 +4,8 @@
 Möchtest du folgenden Key wirklich entfernen?
 </p>
 
-<pre>
-<% PERL %>
-# Format the pubkey nicely
-my $pubkey = $stash->get('pubkey');
-my @parts;
-for (my $c = 0; $c < (length($pubkey) / 80); $c++) {
-    push @parts, substr($pubkey, $c * 80, 80);
-}
-print join(' <span class="lineesc">\</span><br />', @parts);
-<% END %>
-</pre>
+<pre><% pubkey %></pre>
 
-<form action="/BenutzerDB/my/sshkeys/remove/<% keyid %>" method="post">
-<input type="submit" value="Key entfernen">
+<form action="/BenutzerDB/my/sshkeys/remove/<% keyid %>" method="post" class="form-horizontal">
+<input type="submit" value="Key entfernen" class="btn btn-danger">
 </form>

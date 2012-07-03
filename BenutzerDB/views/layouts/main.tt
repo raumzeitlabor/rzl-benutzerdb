@@ -1,26 +1,42 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="de">
 <head>
-<meta http-equiv="Content-type" content="text/html; charset=<% settings.charset %>" />
+<meta charset="<% settings.charset %>">
 <title>BenutzerDB</title>
-<link rel="stylesheet" href="/BenutzerDB/css/style.css" />
+<link rel="stylesheet" href="/BenutzerDB/css/bootstrap.css" />
+<!--<link rel="stylesheet" href="/BenutzerDB/css/style.css" />-->
+<style type="text/css">
+p, label {
+	font-size: 16px;
+}
+</style>
 </head>
 <body>
-<div id="header">
-<img style="margin-right: 10px" alt="RZL-Logo" src="/BenutzerDB/images/logo.png" align="left" width="120px" height="60px" />
-<h1>Benutzerdatenbank</h1>
-<p id="logintext" style="clear: both">
+
+<div class="navbar">
+<div class="navbar-inner">
+<div class="container">
+<img style="margin-right: 10px; margin-top: 6px; margin-bottom: 6px;" alt="RZL-Logo" src="/BenutzerDB/images/logowhite.png" align="left" width="120px" height="60px" />
 <% IF vars.logged_in %>
+<h1 style="margin-top: 4px">BenutzerDB</h1>
 Angemeldet als <strong><% vars.user %></strong> (<a href="/BenutzerDB/logout">Abmelden</a>)
+<% ELSE %>
+<h1 style="line-height: 60px">BenutzerDB</h1>
 <% END %>
-</p>
+</div>
+</div>
+</div>
+
+<div class="container">
+
+<div class="row-fluid">
+<div class="span2" style="padding-top: 6em">
 <div id="menubox">
 <div id="menu">
 <ul>
 <li><a href="/BenutzerDB/">Startseite</a></li>
-<li><a href="/BenutzerDB/changepw">Passwort ändern</a></li>
 <% IF vars.logged_in %>
+<li><a href="/BenutzerDB/changepw">Passwort ändern</a></li>
 <li><a href="/BenutzerDB/my/pin">PIN anzeigen</a></li>
   <% IF vars.has_pin %>
     <li><a href="/BenutzerDB/my/sshkeys/tuer">Tür via SSH</a></li>
@@ -34,15 +50,27 @@ Angemeldet als <strong><% vars.user %></strong> (<a href="/BenutzerDB/logout">Ab
 </ul>
 </div>
 </div>
-</div>
 
-<div id="content">
+</div>
+<div class="span10">
+<div class="page-header">
+<h1><% title %></h1>
+</div>
 <% content %>
 </div>
-<div id="footer">
-<p>
+</div>
+
+<p id="logintext" style="clear: both">
+<% IF vars.logged_in %>
+<% END %>
+</p>
+
+<footer class="footer" style="margin-top: 8em">
+<p style="text-align: center; font-size: 13px; padding-top: 1em">
 Ansprechpartner: sECuRE (jabber: michael@stapelberg.de)
 </p>
+</footer>
+
 </div>
 </body>
 </html>

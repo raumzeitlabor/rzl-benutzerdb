@@ -1,20 +1,28 @@
-<p>
-Bitte melde dich an:
-</p>
 
 <% IF error %>
-<p style="border: 2px solid red">
+<div class="alert alert-error">
 <% error %>
-</p>
+</div>
 <% END %>
 
-<form action="/BenutzerDB/login" method="post">
-Nutzername: <input type="text" name="username"><br />
-Passwort: <input type="password" name="password"><br />
-<input type="submit">
+<form action="/BenutzerDB/login" method="post" class="form-horizontal" style="margin-top: 2em">
+<fieldset>
+<div class="control-group">
+<label class="control-label" for="username">Nutzername:</label>
+<div class="controls">
+<input type="text" name="username" id="username" class="input-large"><br />
+</div>
+</div>
+
+<div class="control-group">
+<label class="control-label" for="password">Passwort:</label>
+<div class="controls">
+<input type="password" name="password" id="password" class="input-large"><br />
+</div>
+</div>
+
+<div class="form-actions" style="border-top: 0; margin-bottom: 0">
+<input type="submit" value="Anmelden" class="btn btn-primary">
+</div>
+</fieldset>
 </form>
-
-<p style="margin-top: 4em">
-Wenn du noch keinen Account hast, kannst du <a href="/BenutzerDB/register">dich registrieren</a>.
-</p>
-

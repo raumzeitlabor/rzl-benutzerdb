@@ -1,5 +1,3 @@
-<h2>Deine PIN</h2>
-
 <% IF pin %>
 <p>
 Deine derzeitige PIN lautet:

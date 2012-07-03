@@ -1,17 +1,28 @@
-<h2>Passwort ändern</h2>
-
-<form action="/BenutzerDB/changepw" method="post">
+<form action="/BenutzerDB/changepw" method="post" class="form-horizontal">
 <fieldset>
-<legend>Passwort ändern</legend>
-<label for="oldpw">Altes Passwort:</label>
-<input type="password" name="oldpw" id="oldpw" placeholder="Altes Passwort">
-<br>
-<label for="newpw">Neues Passwort:</label>
+<div class="control-group">
+<label class="control-label" for="oldpw">Altes Passwort:</label>
+<div class="controls">
+<input class="input-large" type="password" name="oldpw" id="oldpw" placeholder="Altes Passwort">
+</div>
+</div>
+
+<div class="control-group">
+<label class="control-label" for="newpw">Neues Passwort:</label>
+<div class="controls">
 <input type="password" name="newpw" id="newpw" placeholder="Neues Passwort">
-<br>
-<label for="newpw2">Neues Passwort (Bestätigung):</label>
+</div>
+</div>
+
+<div class="control-group">
+<label class="control-label" for="newpw2">Neues Passwort (Bestätigung):</label>
+<div class="controls">
 <input type="password" name="newpw2" id="newpw2" placeholder="Neues Passwort (Bestätigung)">
-<br>
-<input type="submit" value="Ändern!">
+</div>
+</div>
+
+<div class="form-actions" style="border-top: 0; margin-bottom: 0">
+<input type="submit" value="Passwort ändern" class="btn btn-primary">
+</div>
 </fieldset>
 </form>

@@ -1,18 +1,32 @@
-<h2>Registration</h2>
-
 <p>
 Bitte gib hier deinen üblichen Nickname an und wähle ein Passwort mit
 mindestens 6 Zeichen.
 </p>
 
 <% IF error %>
-<p style="border: 4px solid red">
+<div class="alert alert-error">
 <% error %>
-</p>
+</div>
 <% END %>
 
-<form action="/BenutzerDB/register" method="post">
-Nutzername: <input type="text" name="reg_username"><br />
-Passwort: <input type="password" name="reg_password"><br />
-<input type="submit">
+<form action="/BenutzerDB/register" method="post" class="form-horizontal" style="margin-top: 2em">
+<fieldset>
+<div class="control-group">
+<label class="control-label" for="username">Nutzername:</label>
+<div class="controls">
+<input type="text" name="reg_username" id="username" class="input-large">
+</div>
+</div>
+
+<div class="control-group">
+<label class="control-label" for="password">Passwort:</label>
+<div class="controls">
+<input type="password" name="reg_password" id="password" class="input-large"><br />
+</div>
+</div>
+
+<div class="form-actions" style="border-top: 0; margin-bottom: 0">
+<input type="submit" value="Registrieren" class="btn btn-primary">
+</div>
+</fieldset>
 </form>
