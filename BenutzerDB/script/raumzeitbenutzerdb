@@ -27,4 +27,27 @@ BEGIN {
 use Dancer;
 use RaumZeitLabor::BenutzerDB;
 
-dance;
+use Twiggy::Server;
+use EV;
+use Plack::Builder;
+
+my $dancerapp = sub {
+    my $env = shift;
+    my $request = Dancer::Request->new(env => $env);
+    Dancer->dance($request);
+};
+
+my $app = builder {
+    enable "Session";
+    enable "CSRFBlock";
+    $dancerapp;
+};
+
+my $server = Twiggy::Server->new(
+    host => '127.0.0.1',
+    port => 3000,
+);
+
+$server->register_service($app);
+
+EV::loop;
