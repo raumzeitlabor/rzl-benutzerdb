@@ -68,6 +68,10 @@ get '/BenutzerDB/' => sub {
     }
 };
 
+get '/BenutzerDB/login' => sub {
+    redirect '/BenutzerDB/';
+};
+
 post '/BenutzerDB/login' => sub {
     return redirect '/BenutzerDB/' unless exists params->{username} && exists params->{password};
 
