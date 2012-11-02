@@ -137,6 +137,57 @@ get '/BenutzerDB/my/pin' => sub {
     return template 'mypin', { title => 'Deine PIN', pin => $pin, admins => \@admins };
 };
 
+get '/BenutzerDB/my/devices' => sub {
+    my $db = database;
+    my $current = $db->quick_select('leases', { ip => request->remote_address });
+    my @devices = $db->quick_select('devices', { handle => session('user') });
+
+    return template 'mydevices', {
+        title => 'Deine Netzwerkgeräte',
+        current => $current,
+        devices => \@devices,
+    };
+};
+
+post '/BenutzerDB/my/devices/add' => sub {
+    my $db = database;
+    my $host  = params->{'hostname'};
+    my $mac = params->{'mac'};
+    my $update = params->{'updatelastseen'};
+
+    if ($host eq '') {
+        return template 'error', { errormessage => 'Keinen Hostname angegeben' };
+    }
+    if ($mac !~ m/[a-f0-9]{2}(?::[a-f0-9]{2}){5}/i) {
+        return template 'error', { errormessage => 'Keine/ungültige MAC-Adresse angegeben' };
+    }
+
+    #my $mac_exists = $db->quick_select('devices', { handle => session('user'), mac => lc $mac });
+    #if ($mac_exists) {
+    #    return template 'error', { errormessage => 'MAC ist bereits registriert' };
+    #}
+
+    #my $mac_is_valid = $db->quick_select('leases', { mac => lc $mac });
+    #unless ($mac_is_valid) {
+    #    return template 'error', { errormessage => 'MAC passt nicht zum Gerät' };
+    #}
+
+    $db->quick_insert('devices', {
+        handle => session('user'),
+        name => $host,
+        mac => lc $mac,
+        updatelastseen => $update ? 1 : 0,
+    });
+
+    redirect '/BenutzerDB/my/devices';
+};
+
+get '/BenutzerDB/my/devices/delete/:fmac' => sub {
+    my $mac = join(":", param('fmac') =~ m/[a-f0-9]{2}/g);
+    database->quick_delete('devices', { handle => session('user'), mac => lc $mac });
+    redirect '/BenutzerDB/my/devices';
+};
+
 get '/BenutzerDB/my/sshkeys/:what' => sub {
     # The what parameter in the URL is there to distinguish between different
     # things, should that ever become necessary.
