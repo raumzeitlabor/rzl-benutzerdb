@@ -38,6 +38,7 @@ Angemeldet als <strong><% vars.user %></strong> (<a href="/BenutzerDB/logout">Ab
 <% IF vars.logged_in %>
 <li><a href="/BenutzerDB/changepw">Passwort ändern</a></li>
 <li><a href="/BenutzerDB/my/pin">PIN anzeigen</a></li>
+<li><a href="/BenutzerDB/my/macs">MAC hinterlegen</a></li>
   <% IF vars.has_pin %>
     <li><a href="/BenutzerDB/my/sshkeys/tuer">Tür via SSH</a></li>
   <% END %>
