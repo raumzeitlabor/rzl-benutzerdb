@@ -16,7 +16,7 @@ in Erfahrung bringen können.</p>
 <% FOR device IN devices %>
 <tr>
 <td><% device.name %></td>
-<td><% device.mac %></td>
+<td><% device.mac FILTER upper %></td>
 <td><% device.updatelastseen == '1' ? device.lastseen : "nicht aktiviert" %></td>
 <td><a href="/BenutzerDB/my/devices/delete/<% device.mac.replace(":", "") FILTER lower %>">löschen</a></td>
 <% END %>
