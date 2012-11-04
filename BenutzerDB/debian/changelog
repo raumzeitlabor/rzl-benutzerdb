@@ -1,3 +1,9 @@
+raumzeitbenutzerdb (1.4-1) unstable; urgency=low
+
+  * add support for mac registration
+
+ -- Simon Elsbrock <else@iodev.org>  Sun, 04 Nov 2012 15:32:26 +0100
+
 raumzeitbenutzerdb (1.3-1) unstable; urgency=low
 
   * Initial Release.
