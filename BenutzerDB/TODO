@@ -1,0 +1,3 @@
+* Eintragung von Geräten nur innerhalb vom RZL (keine beliebige MAC mehr). Da
+  Requests über Proxy reinkommen, muss dieser noch angepasst werden, um
+  "X-Forwarded-For" Header weiterzuleiten.
