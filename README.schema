@@ -33,7 +33,9 @@ CREATE TABLE sshpubkeys (
 CREATE TABLE devices (
 	handle VARCHAR(32) REFERENCES nutzer(handle),
 	name TEXT,
-	mac VARCHAR(17)
+	mac VARCHAR(17),
+	updatelastseen BOOL NOT NULL DEFAULT '1',
+	lastseen DATETIME
 );
 ALTER TABLE devices ADD UNIQUE INDEX (mac);
 

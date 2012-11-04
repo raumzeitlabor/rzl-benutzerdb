@@ -1,0 +1,44 @@
+<p>Falls gewünscht, kannst Du hier die MAC-Adressen deiner
+Netzwerkschnittstellen hinterlegen, damit andere Laboranten deine Anwesenheit
+in Erfahrung bringen können.</p>
+<h2>Registrierte Geräte</h2>
+<% IF devices.size %>
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>Hostname</th>
+<th>MAC-Adresse</th>
+<th>zuletzt gesehen</th>
+<th>&nbsp;</th>
+</tr>
+</thead>
+<tbody>
+<% FOR device IN devices %>
+<tr>
+<td><% device.name %></td>
+<td><% device.mac FILTER upper %></td>
+<td><% device.updatelastseen == '1' ? device.lastseen : "nicht aktiviert" %></td>
+<td><a href="/BenutzerDB/my/devices/delete/<% device.mac.replace(":", "") FILTER lower %>">löschen</a></td>
+<% END %>
+</tbody>
+</table>
+<% ELSE %>
+<p style="font-style: italic; center;">Keine Geräte registriert.</p>
+<% END %>
+<h2>Neues Gerät hinzufügen</h2>
+<% IF current.mac %>
+<form action="/BenutzerDB/my/devices/add" method="post" class="form-horizonal">
+<fieldset>
+<label for="hostname">Hostname</label>
+<input type="text" id="hostname" name="hostname" placeholder="wurstbrot" value="<% current.hostname %>" />
+<label for="mac">MAC Adresse</label>
+<input type="text" id="mac" name="mac" placeholder="AA:BB:CC:DD:EE:FF" value="<% current.mac FILTER upper %>" readonly="readonly" />
+<label class="checkbox">
+<input name="updatelastseen" type="checkbox" checked="checked"> letzter Zeitpunkt darf gespeichert werden
+</label>
+<button type="submit" class="btn">Hinzufügen</button>
+</fieldset>
+</form>
+<% ELSE %>
+<p style="font-style: italic;">Du kannst nur innerhalb des RZL-Netzwerks ein Gerät registrieren.</p>
+<% END %>
