@@ -56,6 +56,14 @@ get '/BenutzerDB/images/logowhite.png' => sub {
     send_file 'images/logowhite.png';
 };
 
+get '/BenutzerDB/fonts/droid-sans.woff' => sub {
+    send_file 'fonts/droid-sans.woff';
+};
+
+get '/BenutzerDB/fonts/droid-sans-bold.woff' => sub {
+    send_file 'fonts/droid-sans-bold.woff';
+};
+
 #
 # displays the login form for invalid sessions and in index page for
 # valid sessions
