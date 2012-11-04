@@ -360,7 +360,7 @@ post '/BenutzerDB/admin/revokepin/:handle' => sub {
 };
 
 get '/BenutzerDB/register' => sub {
-    template 'register', { title => 'Registration' };
+    template 'register', { title => 'Registration' }, { layout => 'login' };
 };
 
 post '/BenutzerDB/register' => sub {

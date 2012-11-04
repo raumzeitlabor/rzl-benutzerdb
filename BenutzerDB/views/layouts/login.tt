@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="<% settings.charset %>">
+<title>BenutzerDB</title>
+<link rel="stylesheet" href="/BenutzerDB/css/bootstrap.css" />
+<!--<link rel="stylesheet" href="/BenutzerDB/css/style.css" />-->
+<style type="text/css">
+p, label {
+	font-size: 16px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<div class="span10">
+<div class="page-header">
+<img style="margin-right: 10px; " alt="RZL-Logo" src="/BenutzerDB/images/logowhite.png" align="left" width="120px" height="60px" />
+<h1 style="line-height: 60px">BenutzerDB<% IF title %>: <% title %><% END %></h1>
+</div>
+<% content %>
+</div>
+</div>
+
+<footer class="footer" style="margin-top: 8em">
+<p style="text-align: center; font-size: 13px; padding-top: 1em">
+Ansprechpartner: sECuRE (jabber: michael@stapelberg.de)
+</p>
+</footer>
+
+</div>
+</body>
+</html>
