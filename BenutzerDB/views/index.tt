@@ -11,8 +11,7 @@ Folgende Aktionen stehen dir links im Menü zur Verfügung:
 <li>
   <strong>MAC hinterlegen:</strong><br />
   Gibt dir die Möglichkeit, die MAC-Adressen deiner Geräte zu hinterlegen.
-  Dadurch kann im IRC und auf der Status-Seite automatisch deine Anwesenheit im
-  Raum angezeigt werden.
+  Dadurch kann im IRC automatisch deine Anwesenheit im Raum angezeigt werden.
 </li>
 <% IF vars.has_pin %>
 <li>
