@@ -11,8 +11,8 @@ Folgende Aktionen stehen dir links im Menü zur Verfügung:
 <li>
   <strong>MAC hinterlegen:</strong><br />
   Gibt dir die Möglichkeit, die MAC-Adressen deiner Geräte zu hinterlegen.
-  Dadurch kann im IRC und auf der Status-Seite automatisch angezeigt
-  werden, ob du gerade im Raum bist.
+  Dadurch kann im IRC und auf der Status-Seite automatisch deine Anwesenheit im
+  Raum angezeigt werden.
 </li>
 <% IF vars.has_pin %>
 <li>
@@ -25,6 +25,6 @@ Folgende Aktionen stehen dir links im Menü zur Verfügung:
 
 <p>
 Bei Fragen jeglicher Art wende dich an sECuRE im IRC (#raumzeitlabor) oder via jabber/mail (michael@stapelberg.de).
-Der Code der BenutzerDB findet sich übrigens auf
+Der Code der BenutzerDB findet sich auf 
 <a href="https://github.com/raumzeitlabor/rzl-benutzerdb">unserer GitHub-Seite</a>.
 </p>
