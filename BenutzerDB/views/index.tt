@@ -8,6 +8,12 @@ Folgende Aktionen stehen dir links im Menü zur Verfügung:
   Zeigt dir die PIN an, mit der du den Raum betreten kannst, sofern dir eine
   eingerichtet wurde. Momentan können PINs nur nach Anfrage vergeben werden.
 </li>
+<li>
+  <strong>MAC hinterlegen:</strong><br />
+  Gibt dir die Möglichkeit, die MAC-Adressen deiner Geräte zu hinterlegen.
+  Dadurch kann im IRC und auf der Status-Seite automatisch angezeigt
+  werden, ob du gerade im Raum bist.
+</li>
 <% IF vars.has_pin %>
 <li>
   <strong>Tür via SSH:</strong><br>
@@ -19,4 +25,6 @@ Folgende Aktionen stehen dir links im Menü zur Verfügung:
 
 <p>
 Bei Fragen jeglicher Art wende dich an sECuRE im IRC (#raumzeitlabor) oder via jabber/mail (michael@stapelberg.de).
+Der Code der BenutzerDB findet sich übrigens auf
+<a href="https://github.com/raumzeitlabor/rzl-benutzerdb">unserer GitHub-Seite</a>.
 </p>
