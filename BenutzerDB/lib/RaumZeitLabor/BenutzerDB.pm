@@ -147,7 +147,7 @@ get '/BenutzerDB/my/pin' => sub {
 
 get '/BenutzerDB/my/devices' => sub {
     my $db = database;
-    my $current = $db->quick_select('leases', { ip => request->remote_address });
+    my $current = $db->quick_select('leases', { ip => request->env->{'HTTP_X_FORWARDED_FOR'} });
     my @devices = $db->quick_select('devices', { handle => session('user') });
 
     return template 'mydevices', {
@@ -170,15 +170,15 @@ post '/BenutzerDB/my/devices/add' => sub {
         return template 'error', { errormessage => 'Keine/ungültige MAC-Adresse angegeben' };
     }
 
-    #my $mac_exists = $db->quick_select('devices', { handle => session('user'), mac => lc $mac });
-    #if ($mac_exists) {
-    #    return template 'error', { errormessage => 'MAC ist bereits registriert' };
-    #}
+    my $mac_exists = $db->quick_select('devices', { handle => session('user'), mac => lc $mac });
+    if ($mac_exists) {
+        return template 'error', { errormessage => 'MAC ist bereits registriert' };
+    }
 
-    #my $mac_is_valid = $db->quick_select('leases', { mac => lc $mac });
-    #unless ($mac_is_valid) {
-    #    return template 'error', { errormessage => 'MAC passt nicht zum Gerät' };
-    #}
+    my $mac_is_valid = $db->quick_select('leases', { mac => lc $mac });
+    unless ($mac_is_valid) {
+        return template 'error', { errormessage => 'MAC passt nicht zum Gerät' };
+    }
 
     $db->quick_insert('devices', {
         handle => session('user'),

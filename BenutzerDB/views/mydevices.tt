@@ -27,17 +27,17 @@ Anwesenheit in Erfahrung bringen können.</p>
 <p style="font-style: italic; center;">Keine Geräte registriert.</p>
 <% END %>
 <h2>Neues Gerät hinzufügen</h2>
-<% IF 1 %>
+<% IF current.mac %>
 <form action="/BenutzerDB/my/devices/add" method="post" class="form-horizonal">
 <fieldset>
 <label for="hostname">Hostname</label>
 <input type="text" id="hostname" name="hostname" placeholder="wurstbrot" value="<% current.hostname %>" />
 <label for="mac">MAC Adresse</label>
-<input type="text" id="mac" name="mac" placeholder="AA:BB:CC:DD:EE:FF" value="<% current.mac FILTER upper %>" />
+<input type="text" id="mac" name="mac" placeholder="AA:BB:CC:DD:EE:FF" value="<% current.mac FILTER upper %>" readonly="readonly" />
 <label class="checkbox">
 <input name="updatelastseen" type="checkbox" checked="checked"> letzter Zeitpunkt darf gespeichert werden
 </label>
-<button type="submit" class="btn">Hinzufügen</button>
+<button type="submit" class="btn btn-primary">Hinzufügen</button>
 </fieldset>
 </form>
 <% ELSE %>
