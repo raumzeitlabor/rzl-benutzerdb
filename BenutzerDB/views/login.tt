@@ -23,6 +23,7 @@
 
 <div class="form-actions" style="border-top: 0; margin-bottom: 0">
 <input type="submit" value="Anmelden" class="btn btn-primary">
+<a href="/BenutzerDB/register" class="btn">Registrieren</a>
 </div>
 </fieldset>
 </form>
