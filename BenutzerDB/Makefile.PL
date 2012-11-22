@@ -13,6 +13,8 @@ requires 'Dancer::Plugin::Database';
 requires 'Dancer::Session::Cookie';
 requires 'Template';
 requires 'Plack';
+requires 'Plack::Middleware::Session';
+requires 'Plack::Middleware::CSRFBlock';
 requires 'Crypt::SaltedHash';
 requires 'Twiggy';
 requires 'JSON';
