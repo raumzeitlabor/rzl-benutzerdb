@@ -1,0 +1,9 @@
+Setting up your environment
+
+1. apt-get install cpanm
+2. cpanm --installdeps .
+3. setup your database
+4. modify config.yml accordingly
+5. execute app/bin.pl
+6. ???
+7. profit

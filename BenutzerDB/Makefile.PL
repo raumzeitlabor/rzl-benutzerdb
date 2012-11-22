@@ -12,7 +12,6 @@ requires 'Dancer';
 requires 'Dancer::Plugin::Database';
 requires 'Dancer::Session::Cookie';
 requires 'Template';
-requires 'Plack';
 requires 'Crypt::SaltedHash';
 requires 'Twiggy';
 requires 'JSON';
