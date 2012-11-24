@@ -11,12 +11,14 @@ requires 'YAML';
 requires 'Dancer';
 requires 'Dancer::Plugin::Database';
 requires 'Dancer::Session::Cookie';
+requires 'DateTime::Event::Recurrence';
 requires 'Template';
 requires 'Crypt::SaltedHash';
 requires 'Twiggy';
 requires 'JSON';
 
 install_script 'script/raumzeitbenutzerdb';
+install_script 'script/raumzeitbenutzerdb-pinrevoker';
 
 postamble <<'END_OF_MAKEFILE';
 install:: extra_install

@@ -1,11 +1,31 @@
 <p>
-Hier kannst du (als Administrator) die PIN eines Nutzer revoken.<br />
-Mit dieser PIN kann das RaumZeitLabor danach nicht mehr geöffnet werden.<br />
-Die PIN selbst wird nirgends gesichert.
+Hier kannst du (als Administrator) die PIN eines Nutzer revoken. Mit dieser
+PIN kann das RaumZeitLabor danach nicht mehr geöffnet werden. Die PIN selbst
+wird nirgends gesichert.<br/>
+<br/>
+Du kannst die PIN entweder mit sofortiger Wirkung revoken, oder vormerken,
+sodass diese zum nächsten Quartal ihre Gültigkeit verliert.
 </p>
 
-<ul>
+<h3>Übersicht</h3>
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th>Nickname</th>
+<th>Name</th>
+<th>gültig bis</th>
+<th colspan="2" style="width:10%">&nbsp;</th>
+</tr>
+</thead>
+<tbody>
 <% FOR user in users %>
-<li><a href="/BenutzerDB/admin/revokepin/<% user.handle %>">PIN von „<% user.handle %>“ revoken</a></li>
+<tr>
+<td><% user.handle %></a></td>
+<td><% user.realname %></a></td>
+<td><% user.pin_expiry ? user.pin_expiry : "unbegrenzt" %></td>
+<td><a href="/BenutzerDB/admin/revokepin/<% user.handle %>">revoken</a></td>
+<td><a href="/BenutzerDB/admin/revokepin/<% user.handle %>/deferred">vormerken</a></td>
+</tr>
 <% END %>
-</ul>
+</tbody>
+</table>

@@ -1,0 +1,82 @@
+#!/usr/bin/env perl
+# vim:ts=4:sw=4:expandtab
+#
+# RaumZeitBenutzerDB Pin Revoker
+#
+# © 2012 Simon Elsbrock, see LICENSE
+#
+
+BEGIN {
+    use FindBin;
+    # Are we running in development mode or in production?
+    if ($FindBin::Bin =~ m,/script/?$,) {
+        use lib "$FindBin::Bin/../lib";
+        $ENV{DANCER_APPDIR} ||= "$FindBin::Bin/../";
+        $ENV{DANCER_CONFDIR} ||= "$FindBin::Bin/../";
+    } else {
+        $ENV{DANCER_ENVIRONMENT} = "production";
+
+        # Start with /usr/share/benutzerdb as appdir by default.
+        $ENV{DANCER_APPDIR} ||= '/usr/share/benutzerdb';
+
+        # And use /etc/benutzerdb/config.yml by default.
+        $ENV{DANCER_CONFDIR} ||= '/etc/benutzerdb';
+    }
+}
+
+use utf8;
+use Dancer;
+use RaumZeitLabor::BenutzerDB;
+use Dancer::Plugin::Database;
+
+use Encode qw/encode/;
+use MIME::Lite;
+use Time::Piece;
+
+my @expired = database->quick_select('nutzer', {
+    pin => { 'is' => undef, not => 1 },
+    pin_expiry => { 'le' => localtime->datetime }
+});
+
+exit 0 if (@expired == 0);
+
+my @userinfo;
+foreach my $p (@expired) {
+    database->quick_update('nutzer', {
+        handle => $p->{handle}
+    }, {
+        pin => undef,
+        pin_expiry => localtime->datetime,
+    });
+    push @userinfo, sprintf("  %-15s| %-15s| %s", $p->{handle}, $p->{realname}, $p->{pin_expiry})."\n";
+}
+
+my $userlist = join("\n", @userinfo);
+my $body = <<EOF;
+Lieber Vorstand,
+
+die folgenden PINs waren für die Revocation vorgemerkt und wurden soeben aus
+der Datenbank gelöscht:
+
+  Nickname       | Realname       | Termin
+  =====================================================
+$userlist
+Sie sollten mit der nächsten Pinpad-Synchronisation deaktiviert werden
+(innerhalb der nächsten Minuten).
+
+Der Account der jeweiligen Benutzer bleibt hiervon unberührt.
+
+Viele Grüße,
+die BenutzerDB
+EOF
+
+my $msg = MIME::Lite->new(
+    From    => 'no-reply@raumzeitlabor.de',
+    To      => 'vorstand@raumzeitlabor.de',
+    Subject => 'PIN Revocation Report',
+    Type    => 'text/plain; charset=UTF-8',
+    Data    => encode("utf8", $body),
+    Charset => 'utf8',
+);
+
+$msg->send;

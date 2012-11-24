@@ -6,6 +6,7 @@ CREATE TABLE nutzer (
 	handle VARCHAR(32) NOT NULL UNIQUE,
 	passwort TEXT NOT NULL,
 	pin TEXT NULL,
+    pin_expires DATETIME NULL,
 
 	realname TEXT NULL,
 	email TEXT NULL,

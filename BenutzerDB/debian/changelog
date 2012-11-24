@@ -1,3 +1,9 @@
+raumzeitbenutzerdb (1.4-1.1) unstable; urgency=low
+
+  * add support for deferred pin revocation
+
+ -- Simon Elsbrock <simon@iodev.org>  Sat, 24 Nov 2012 20:06:53 +0100
+
 raumzeitbenutzerdb (1.4-1) unstable; urgency=low
 
   * add support for mac registration

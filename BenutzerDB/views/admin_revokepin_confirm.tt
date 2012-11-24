@@ -1,13 +1,15 @@
 <h2>PIN revoken</h2>
 
-<p>
-Du möchtest die PIN von Benutzer <strong>„<% handle %>“</strong> revoken.
-</p>
+<p>Du möchtest die PIN von Benutzer <strong>„<% handle %>“</strong></p>
+<ul>
+<% if when == 'now' %>
+<li>mit sofortiger Wirkung</li>
+<% else %>
+<li>zum nächsten Quartal (<% when %>)</li>
+<% end %>
+</ul>
+<p>revoken. Bitte bestätige dies nochmal:</p>
 
-<p>
-Bitte bestätige dies nochmal:
-</p>
-
-<form action="/BenutzerDB/admin/revokepin/<% handle %>" method="post">
-<input type="submit" value="PIN von <% handle %> revoken">
+<form action="/BenutzerDB/admin/revokepin/<% handle %><% if when != 'now' %>/deferred<% end %>" method="post">
+<input type="submit" value="PIN <% if when == 'now' %>sofort revoken<% else %>vormerken zum Revoken<% end %>">
 </form>

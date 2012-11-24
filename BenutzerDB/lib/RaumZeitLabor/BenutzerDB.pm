@@ -2,6 +2,7 @@
 package RaumZeitLabor::BenutzerDB;
 use Dancer ':syntax';
 use Dancer::Plugin::Database;
+use DateTime::Event::Recurrence;
 use Data::Dumper;
 use Crypt::SaltedHash;
 
@@ -344,7 +345,10 @@ post '/BenutzerDB/admin/setpin/:handle' => sub {
         close($rndfh);
     }
 
-    $db->quick_update('nutzer', { handle => $handle }, { pin => $pindigits });
+    $db->quick_update('nutzer', { handle => $handle }, {
+        pin => $pindigits,
+        pin_expiry => undef,
+    });
 
     return template 'admin_setpin_success', { handle => $handle };
 };
@@ -357,14 +361,49 @@ get '/BenutzerDB/admin/revokepin' => sub {
 };
 
 get '/BenutzerDB/admin/revokepin/:handle' => sub {
+    forward '/BenutzerDB/admin/revokepin/'.params->{handle}.'/now';
+};
+
+get '/BenutzerDB/admin/revokepin/:handle/:when' => sub {
     my $entry = database->quick_select('nutzer', { handle => param('handle') });
-    return template 'admin_revokepin_confirm', { handle => $entry->{handle} };
+
+    my $when = params->{when};
+    if ($when eq 'deferred') {
+        my $fiscal = monthly DateTime::Event::Recurrence( interval => 3 );
+        $when = $fiscal->next( DateTime->today );
+    }
+
+    return template 'admin_revokepin_confirm', {
+        handle => $entry->{handle},
+        when   => $when,
+    };
 };
 
 post '/BenutzerDB/admin/revokepin/:handle' => sub {
+    forward '/BenutzerDB/admin/revokepin/'.params->{handle}.'/now';
+};
+
+post '/BenutzerDB/admin/revokepin/:handle/:when' => sub {
     my $handle = param('handle');
-    database->quick_update('nutzer', { handle => $handle }, { pin => undef });
-    return template 'admin_revokepin_success', { handle => $handle };
+
+    my $when = params->{when};
+    if ($when eq 'deferred') {
+        my $fiscal = monthly DateTime::Event::Recurrence( interval => 3 );
+        $when = $fiscal->next( DateTime->today );
+        database->quick_update('nutzer', { handle => $handle }, {
+            pin_expiry => $when,
+        });
+    } else {
+        database->quick_update('nutzer', { handle => $handle }, {
+            pin => undef,
+            pin_expiry => DateTime->now,
+        });
+    }
+
+    return template 'admin_revokepin_success', {
+        handle => $handle,
+        when => $when,
+    };
 };
 
 get '/BenutzerDB/register' => sub {

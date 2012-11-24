@@ -1,5 +1,7 @@
 <h2>PIN revoken</h2>
 
 <p>
-Der Benutzer „<% handle %>“ hat nun keine PIN mehr.
+Der Benutzer „<% handle %>“ <% if when == 'now' %>hat nun keine PIN mehr.<%
+else %>wird am <% when %> seine PIN verlieren. Ihr werdet hierüber nochmals per
+Mail informiert.<% end %>
 </p>
