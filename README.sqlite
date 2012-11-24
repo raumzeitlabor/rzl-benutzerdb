@@ -1,0 +1,76 @@
+--
+-- Benutzer
+--
+CREATE TABLE nutzer (
+	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	handle VARCHAR(32) NOT NULL UNIQUE,
+	passwort TEXT NOT NULL,
+	pin TEXT NULL,
+    pin_expires DATETIME NULL,
+
+	realname TEXT NULL,
+	email TEXT NULL,
+	credit DECIMAL(6, 2) DEFAULT 0 NOT NULL,
+	admin BOOL DEFAULT FALSE
+);
+
+--
+-- View auf die Hashes, auf die mehr Benutzer Zugriff haben
+--
+CREATE VIEW nutzer_hashesonly AS SELECT id, handle, passwort FROM nutzer;
+
+--
+-- SSH public keys
+--
+CREATE TABLE sshpubkeys (
+	keyid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	handle VARCHAR(32) REFERENCES nutzer(handle),
+	pubkey TEXT NOT NULL
+);
+
+--
+-- Registrierte Geräte
+--
+CREATE TABLE devices (
+	handle VARCHAR(32) REFERENCES nutzer(handle),
+	name TEXT,
+	mac VARCHAR(17),
+	updatelastseen BOOL NOT NULL DEFAULT '1',
+	lastseen DATETIME
+);
+
+--
+-- DHCP-Leases (aktualisiert durch push von der firebox)
+--
+CREATE TABLE leases (
+	ip VARCHAR(39) PRIMARY KEY,
+	mac VARCHAR(17) NOT NULL,
+	ipv4_reachable BOOL NOT NULL,
+	ipv6_reachable BOOL NOT NULL,
+	hostname TEXT NULL
+);
+
+--
+-- Tuerstatus (aktualisiert durch push von der firebox)
+--
+CREATE TABLE tuerstatus (status VARCHAR(1));
+
+--
+-- the read-only user can only SELECT on our view
+--
+
+
+-- Handle
+-- Realname
+-- Passwort
+-- SSL-Zert
+-- SSH-Key
+-- PIN (6-stellig)
+-- e-Mail
+-- Guthaben
+-- Buchungen
+-- Zugänge loggen
+-- Liste MAC-Adressen
+-- Privacy-Settings
+-- Name als Sprachdatei
+
