@@ -68,7 +68,8 @@ Angemeldet als <strong><% vars.user %></strong> (<a href="/BenutzerDB/logout">Ab
 
 <footer class="footer" style="margin-top: 8em">
 <p style="text-align: center; font-size: 13px; padding-top: 1em">
-Ansprechpartner: sECuRE (jabber: michael@stapelberg.de)
+Ansprechpartner: Else (jabber/mail: simon@iodev.org)<br/>
+Die BenutzerDB basiert auf der Arbeit von sECuRE (michael@stapelberg.de).
 </p>
 </footer>
 
