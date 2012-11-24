@@ -1,6 +1,9 @@
 <p>
-Bitte gib hier deinen üblichen Nickname an und wähle ein Passwort mit
-mindestens 6 Zeichen.
+Gib hier deinen üblichen Nickname an und wähle ein Passwort mit mindestens 6
+Zeichen.<br/>
+<br/>
+<strong>Wichtig:</strong> Bitte gib deinen richtigen Namen an, um dem Vorstand
+die Zuordnung zum Nickname zu erleichtern.
 </p>
 
 <% IF error %>
@@ -15,6 +18,13 @@ mindestens 6 Zeichen.
 <label class="control-label" for="username">Nutzername:</label>
 <div class="controls">
 <input type="text" name="reg_username" id="username" class="input-large">
+</div>
+</div>
+
+<div class="control-group">
+<label class="control-label" for="username">Realname:</label>
+<div class="controls">
+<input type="text" name="reg_realname" id="realname" class="input-large">
 </div>
 </div>
 

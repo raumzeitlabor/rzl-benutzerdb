@@ -416,27 +416,37 @@ post '/BenutzerDB/register' => sub {
         return template 'register', { title => 'Registration', error => 'Nutzername/Passwort fehlen' };
     }
     my $user = params->{reg_username};
+    my $real = params->{reg_realname};
     my $pass = params->{reg_password};
     my $db = database;
 
     if (length($user) < 1) {
-        return template 'register', { title => 'Registration', error => 'Nutzername zu kurz' };
+        return template 'register', { title => 'Registration', error => 'Nutzername zu kurz' }, { layout => 'login' };
+    }
+
+    if (length($real) < 1) {
+        return template 'register', { title => 'Registration', error => 'Realname zu kurz' }, { layout => 'login' };
     }
 
     if (length($pass) < 6) {
-        return template 'register', { title => 'Registration', error => 'Passwort zu kurz' };
+        return template 'register', { title => 'Registration', error => 'Passwort zu kurz' }, { layout => 'login' };
     }
 
     my $entry = $db->quick_select('nutzer', { handle => $user });
     if (defined($entry)) {
-        return template 'register', { title => 'Registration', error => 'Nutzername schon vergeben!' };
+        return template 'register', { title => 'Registration', error => 'Nutzername schon vergeben!' }, { layout => 'login' };
     }
 
     my $csh = Crypt::SaltedHash->new(algorithm => 'SHA-1');
     $csh->add($pass);
     my $hash = $csh->generate;
 
-    $db->quick_insert('nutzer', { handle => $user, passwort => $hash });
+    $db->quick_insert('nutzer', {
+        handle => $user,
+        realname => $real,
+        passwort => $hash,
+        admin => 0
+    });
 
     session user => $user;
 
