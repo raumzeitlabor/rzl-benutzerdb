@@ -14,11 +14,11 @@ use RaumZeitLabor::BenutzerDB::Pinsync;
 
 GetOptions(
     'version' => sub {
-        say "pin-sync v$RaumZeitLabor::BenutzerDB::Pinsync::VERSION";
+        say "$0 v$RaumZeitLabor::BenutzerDB::Pinsync::VERSION";
         exit 0;
     },
     'help' => sub {
-        say "ircbot-mpd: no options, started via initscript.";
+        say "$0: no options, started via initscript.";
         exit 0;
     }
 );
