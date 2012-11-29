@@ -1,0 +1,4 @@
+# Log all lines from pin-validator to /var/log/pin-validator.log (without syncing)
+# and discard them.
+:programname, isequal, "pin-validator"  -/var/log/pin-validator.log
+:programname, isequal, "pin-validator" ~
