@@ -1,7 +1,15 @@
-<p>Falls gewünscht, kannst Du hier die
-<a href="https://raumzeitlabor.de/wiki/Howto:MAC-Adresse_herausfinden" target="_blank">MAC-Adressen</a>
+<p>Falls gewünscht, kannst Du hier die <a
+href="http://en.wikipedia.org/wiki/Medium_Access_Control#Addressing_mechanism">MAC-Adressen</a>
 deiner Netzwerkschnittstellen hinterlegen, damit andere Laboranten deine
-Anwesenheit in Erfahrung bringen können.</p>
+Anwesenheit in Erfahrung bringen können. Damit nicht einfach jeder eine
+beliebige MAC Adresse registrieren kann, kannst Du neue Geräte nur hinzufügen,
+wenn du die BenutzerDB über ihre interne URL besucht. In diesem Fall können wir
+automatisch die passende MAC Adresse deines Endgeräts heraussuchen und
+vorschlagen.<br/><br/> <strong>Hinweis:</strong> Damit deine Anwesenheit
+festgestellt werden kann, muss dein Gerät auf <a
+href="https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol">ICMP</a>
+Pings antworten. (Das ist auch generell eine gute Idee.)</p>
+
 <h2>Registrierte Geräte</h2>
 <% IF devices.size %>
 <table class="table table-striped table-bordered">
@@ -41,5 +49,7 @@ Anwesenheit in Erfahrung bringen können.</p>
 </fieldset>
 </form>
 <% ELSE %>
-<p style="font-style: italic;">Du kannst nur innerhalb des RZL-Netzwerks ein Gerät registrieren.</p>
+<p style="font-style: italic;">Du kannst nur innerhalb des RZL-Netzwerks ein
+Gerät registrieren. Bitte benutze die <a href="<% intern_url %>">interne
+URL</a> der BenutzerDB, damit wir deine MAC Adresse herausfinden können.</p>
 <% END %>

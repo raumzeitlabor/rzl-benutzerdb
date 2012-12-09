@@ -151,9 +151,12 @@ get '/BenutzerDB/my/devices' => sub {
     my $current = $db->quick_select('leases', { ip => request->env->{'HTTP_X_FORWARDED_FOR'} });
     my @devices = $db->quick_select('devices', { handle => session('user') });
 
+    ((my $intern_url = request->uri_base) =~ s/\.raumzeitlabor\.de\//.rzl\//);
+
     return template 'mydevices', {
         title => 'Deine Netzwerkgeräte',
         current => $current,
+        intern_url => $intern_url.request->path_info,
         devices => \@devices,
     };
 };
