@@ -5,6 +5,7 @@ use Dancer::Plugin::Database;
 use DateTime::Event::Recurrence;
 use Data::Dumper;
 use Crypt::SaltedHash;
+use Net::Domain qw/hostfqdn/;
 
 our $VERSION = '1.2';
 
@@ -151,12 +152,16 @@ get '/BenutzerDB/my/devices' => sub {
     my $current = $db->quick_select('leases', { ip => request->env->{'HTTP_X_FORWARDED_FOR'} });
     my @devices = $db->quick_select('devices', { handle => session('user') });
 
-    ((my $intern_url = request->uri_base) =~ s/\.raumzeitlabor\.de\//.rzl\//);
+    # this does not work due to proxying
+    #((my $intern_url = request->uri_base) =~ s/\.raumzeitlabor\.de\//.rzl\//);
+
+    # use fqdn instead
+    my $intern_url = hostfqdn;
 
     return template 'mydevices', {
         title => 'Deine Netzwerkgeräte',
         current => $current,
-        intern_url => $intern_url.request->path_info,
+        intern_url => '//'.$intern_url.request->path_info,
         devices => \@devices,
     };
 };
