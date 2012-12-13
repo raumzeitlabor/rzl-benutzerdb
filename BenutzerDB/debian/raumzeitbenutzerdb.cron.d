@@ -1,2 +1,2 @@
 unset MAILTO
-1 0 * * * /usr/bin/raumzeitbenutzerdb-pinrevoker
+1 0 * * * root /usr/bin/raumzeitbenutzerdb-pinrevoker
