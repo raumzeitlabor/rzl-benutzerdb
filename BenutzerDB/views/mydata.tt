@@ -1,0 +1,42 @@
+<% if not u.realname %>
+<p>
+<span class="label label-important">Hinweis</span> Wir haben bisher nicht
+deinen echten Namen in der Datenbank.  Diesen brauchen wir aber, um deine
+Mitgliedschaft zu verifizieren. Wir bitten dich daher, deinen Namen
+einzugeben.<br />
+<br/>
+<strong>Achtung:</strong> Du kannst deinen Namen nur <emph>einmal</emph>
+ändern.
+</p>
+<br/>
+<% end %>
+<form action="/BenutzerDB/my/data" method="post" class="form-horizontal">
+
+<fieldset>
+<div class="control-group">
+<label class="control-label" for="nick">Nickname:</label>
+<div class="controls">
+<input class="input-large" type="text" name="nick" id="nick" disabled="disabled" value="<% u.handle %>">
+</div>
+</div>
+
+<div class="control-group">
+<label class="control-label" for="realname">Realname:</label>
+<div class="controls">
+<input class="input-large" type="text" name="realname" id="realname" <% if u.realname %>disabled="disabled" value="<% u.realname %>"<% else %>placeholder="Bernd Lauert"<% end %>>
+</div>
+</div>
+
+<div class="control-group">
+<label class="control-label" for="email">Email:</label>
+<div class="controls">
+<input class="input-large" type="text" name="email" id="email" placeholder="foo@derpson.org" value="<% u.email %>">
+</div>
+</div>
+
+<div class="form-actions" style="border-top: 0; margin-bottom: 0">
+<input type="submit" value="Daten ändern" class="btn btn-primary">
+</div>
+</fieldset>
+</form>
+</form>

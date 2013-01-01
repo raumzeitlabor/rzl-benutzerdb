@@ -139,6 +139,26 @@ post '/BenutzerDB/changepw' => sub {
     return template 'changepw_success';
 };
 
+get '/BenutzerDB/my/data' => sub {
+    my $db = database;
+    my $entry = $db->quick_select('nutzer', { handle => session('user') });
+    return template 'mydata', { title => 'Deine Daten', u => $entry };
+};
+
+post '/BenutzerDB/my/data' => sub {
+    my $db = database;
+    my $entry = $db->quick_select('nutzer', { handle => session('user') });
+
+    my $hash = {};
+    $hash->{realname} = params->{'realname'} unless $entry->{realname};
+    $hash->{email}    = params->{'email'};
+
+    $db->quick_update('nutzer', { handle => session('user') }, $hash);
+
+    $entry = $db->quick_select('nutzer', { handle => session('user') });
+    return template 'mydata', { title => 'Deine Daten', u => $entry };
+};
+
 get '/BenutzerDB/my/pin' => sub {
     my $db = database;
     my $entry = $db->quick_select('nutzer', { handle => session('user') });

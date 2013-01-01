@@ -36,6 +36,7 @@ Angemeldet als <strong><% vars.user %></strong> (<a href="/BenutzerDB/logout">Ab
 <ul>
 <li><a href="/BenutzerDB/">Startseite</a></li>
 <% IF vars.logged_in %>
+<li><a href="/BenutzerDB/my/data">Daten ändern</a></li>
 <li><a href="/BenutzerDB/changepw">Passwort ändern</a></li>
 <li><a href="/BenutzerDB/my/pin">PIN anzeigen</a></li>
 <li><a href="/BenutzerDB/my/devices">MAC hinterlegen</a></li>
