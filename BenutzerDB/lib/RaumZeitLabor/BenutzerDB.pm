@@ -377,8 +377,12 @@ get '/BenutzerDB/admin/revokepin/:handle/:when' => sub {
 
     my $when = params->{when};
     if ($when eq 'deferred') {
+        # 3 Wochen Kündigungsfrist zum Ende des Quartals
+        my $dt = DateTime->now;
+        $dt->add( end_of_month => 'wrap', weeks => 3 );
+
         my $fiscal = monthly DateTime::Event::Recurrence( interval => 3 );
-        $when = $fiscal->next( DateTime->today );
+        $when = $fiscal->next( $dt );
     }
 
     return template 'admin_revokepin_confirm', {
