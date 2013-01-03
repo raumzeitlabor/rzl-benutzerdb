@@ -22,6 +22,13 @@ hook before => sub {
         my $entry = database->quick_select('nutzer', { handle => $user });
         $is_admin = $entry->{admin};
         $has_pin = defined($entry->{pin});
+
+        # force users to update their data if necessary
+        if (request->path_info !~ qr#^/BenutzerDB/(css|images|fonts|logout)#
+              && request->path_info !~ qr#^/BenutzerDB/my/data/?$#
+              && !defined $entry->{realname}) {
+            redirect '/BenutzerDB/my/data';
+        }
     }
 
     # Save the state in vars so that we can use it in templates.
@@ -151,9 +158,9 @@ post '/BenutzerDB/my/data' => sub {
 
     my $hash = {};
     $hash->{realname} = params->{'realname'} unless $entry->{realname};
-    $hash->{email}    = params->{'email'};
+    $hash->{email}    = params->{'email'} if length (params->{'email'} =~ s/\s+//rg) > 0;
 
-    $db->quick_update('nutzer', { handle => session('user') }, $hash);
+    $db->quick_update('nutzer', { handle => session('user') }, $hash) if keys %{$hash};
 
     $entry = $db->quick_select('nutzer', { handle => session('user') });
     return template 'mydata', { title => 'Deine Daten', u => $entry };
