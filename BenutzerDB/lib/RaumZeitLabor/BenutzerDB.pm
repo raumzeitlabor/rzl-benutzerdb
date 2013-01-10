@@ -3,7 +3,6 @@ package RaumZeitLabor::BenutzerDB;
 use Dancer ':syntax';
 use Dancer::Plugin::Database;
 use DateTime::Event::Recurrence;
-use Data::Dump qw/pp/;
 use Crypt::SaltedHash;
 use Net::Domain qw/hostfqdn/;
 
