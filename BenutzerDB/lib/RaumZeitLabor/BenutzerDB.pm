@@ -3,7 +3,7 @@ package RaumZeitLabor::BenutzerDB;
 use Dancer ':syntax';
 use Dancer::Plugin::Database;
 use DateTime::Event::Recurrence;
-use Data::Dumper;
+use Data::Dump qw/pp/;
 use Crypt::SaltedHash;
 use Net::Domain qw/hostfqdn/;
 
@@ -171,7 +171,8 @@ get '/BenutzerDB/my/pin' => sub {
     my $entry = $db->quick_select('nutzer', { handle => session('user') });
     my @admins = $db->quick_select('nutzer', { admin => 1 }, { order_by => 'handle' });
     my $pin = $entry->{pin};
-    return template 'mypin', { title => 'Deine PIN', pin => $pin, admins => \@admins };
+    my $expiry = $entry->{pin_expiry};
+    return template 'mypin', { title => 'Deine PIN', pin => $pin, expiry => $expiry, admins => \@admins };
 };
 
 get '/BenutzerDB/my/devices' => sub {

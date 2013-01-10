@@ -6,13 +6,22 @@ Deine derzeitige PIN lautet:
 <p>
 <strong><% pin %></strong> (gefolgt von # zum Bestätigen)
 </p>
+<p>
+<% IF expiry %>Die PIN ist gültig bis: <% expiry %><% END %>
+</p>
 <% ELSE %>
 <p>
+<% IF expiry %>
+Deine PIN wurde am <% expiry %> deaktiviert.
+<% ELSE %>
 Du hast noch keine PIN.
 </p>
 
 <p>
 Jedes Mitglied des RaumZeitLabor e.V. bekommt eine PIN.<br />
+</p>
+<% END %>
+<p>
 Bitte wende dich an einen der folgenden Admins, damit dir eine PIN zugewiesen wird:<br />
 <ul>
 <% FOR admin IN admins %>
