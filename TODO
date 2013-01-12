@@ -1,2 +1,4 @@
 * fix BenutzerDB installation; session directory is owned by wrong user:
   /usr/share/benutzerdb/
+* enable crash log for BenutzerDB
+* rotate logs for pinsync
