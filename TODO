@@ -1,0 +1,2 @@
+* fix BenutzerDB installation; session directory is owned by wrong user:
+  /usr/share/benutzerdb/
