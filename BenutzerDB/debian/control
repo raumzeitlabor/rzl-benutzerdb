@@ -14,6 +14,7 @@ Build-Depends-Indep: libcrypt-saltedhash-perl,
  libmodule-install-perl,
  libev-perl,
  libplack-middleware-csrfblock-perl,
+ libdatetime-event-recurrence-perl,
  perl,
  perl-modules,
  twiggy
@@ -33,6 +34,7 @@ Depends: ${misc:Depends}, ${perl:Depends},
  libjson-perl,
  libev-perl,
  libplack-middleware-csrfblock-perl,
+ libdatetime-event-recurrence-perl,
  twiggy
 Description: Benutzer-Datenbank fuer das Pinpad und andere Dienste
  (no description was found)
