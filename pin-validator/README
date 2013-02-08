@@ -1,0 +1,3 @@
+Deprecated. Pins are now synchronized with the EEPROM of Pinpad V1.
+
+See ../pin-sync for more information.

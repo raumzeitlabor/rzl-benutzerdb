@@ -373,10 +373,15 @@ post '/BenutzerDB/admin/setpin/:handle' => sub {
         $pindigits = join '', map { ord($_) % 10 } split //, $pinbytes;
 
         # Blacklist a few sequences which nerds are likely to try.
+        #
+        # We also require PINs to be unique for various reason, most importantly for
+        # self-provisioning of cashpoint tokens.
+        my $pin_exists = defined database->quick_select('nutzer', { pin => $pindigits });
         $pin_bad = ($pindigits =~ /23/ ||
                     $pindigits =~ /42/ ||
                     $pindigits =~ /1337/ ||
-                    $pindigits =~ /17/);
+                    $pindigits =~ /17/ ||
+                    $pin_exists);
         close($rndfh);
     }
 
