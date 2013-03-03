@@ -240,9 +240,15 @@ get '/BenutzerDB/my/sshkeys/:what' => sub {
 };
 
 post '/BenutzerDB/my/sshkeys/add' => sub {
-    # We need to validate the key carefully. It will end up verbatim in the
-    # .ssh/authorized_keys on the firebox and might allow local user access
-    # (shouldn’t be critical, but nevertheless!).
+    # We need to validate the key carefully.
+
+    # Therefore, let's first make sure only members are able to add keys.
+    unless (vars->{has_pin}) {
+        return template 'error', { errormessage => 'No authorization to add a key.' };
+    }
+
+    # It will end up verbatim in the .ssh/authorized_keys on the firebox and
+    # might allow local user access (shouldn’t be critical, but nevertheless!).
     my $pubkey = param('pubkey');
     if (!($pubkey =~ /^ssh-([a-z]+)/)) {
         return template 'mysshkeys_add_error', {
