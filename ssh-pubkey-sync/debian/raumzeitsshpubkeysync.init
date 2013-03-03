@@ -45,7 +45,7 @@ do_start()
 		--background --exec $DAEMON --test > /dev/null \
 		|| return 1
 	start-stop-daemon --start --quiet --make-pidfile --pidfile $PIDFILE \
-		--background --chuid tuer:tuer --exec $DAEMON -- $PUBKEYSYNC_OPTIONS --format "$PUBKEYSYNC_FORMAT" \
+		--background --chuid tuer:tuer --exec $DAEMON -- $PUBKEYSYNC_OPTIONS --format \'"$PUBKEYSYNC_FORMAT"\' \
 		|| return 2
 }
 
