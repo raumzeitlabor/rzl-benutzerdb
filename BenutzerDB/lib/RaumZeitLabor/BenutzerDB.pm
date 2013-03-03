@@ -448,6 +448,7 @@ post '/BenutzerDB/admin/revokepin/:handle/:when' => sub {
             pin => undef,
             pin_expiry => DateTime->now,
         });
+        database->quick_delete('sshpubkeys', { handle => $handle });
     }
 
     return template 'admin_revokepin_success', {

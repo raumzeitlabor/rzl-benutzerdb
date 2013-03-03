@@ -48,6 +48,9 @@ foreach my $p (@expired) {
         pin => undef,
         pin_expiry => localtime->datetime,
     });
+    database->quick_delete('sshpubkeys', {
+        handle => $p->{handle}
+    });
     push @userinfo, sprintf("  %-15s| %-15s| %s", $p->{handle}, $p->{realname}, $p->{pin_expiry})."\n";
 }
 
