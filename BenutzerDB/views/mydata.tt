@@ -1,7 +1,7 @@
 <% if not u.realname %>
 <p>
 <span class="label label-important">Hinweis</span> Wir haben bisher nicht
-deinen echten Namen in der Datenbank.  Diesen brauchen wir aber, um deine
+deinen echten Vor- und Nachnamen in der Datenbank.  Diesen brauchen wir aber, um deine
 Mitgliedschaft zu verifizieren. Wir bitten dich daher, deinen Namen
 einzugeben. Danach steht dir die BenutzerDB wie gewohnt zur Verfügung.<br />
 <br/>
@@ -21,7 +21,7 @@ einzugeben. Danach steht dir die BenutzerDB wie gewohnt zur Verfügung.<br />
 </div>
 
 <div class="control-group">
-<label class="control-label" for="realname">Realname:</label>
+<label class="control-label" for="realname">Vor- und Nachname:</label>
 <div class="controls">
 <input class="input-large" type="text" name="realname" id="realname" <% if u.realname %>disabled="disabled" value="<% u.realname %>"<% else %>placeholder="Bernd Lauert"<% end %>>
 </div>
