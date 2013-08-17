@@ -101,7 +101,7 @@ post '/BenutzerDB/login' => sub {
         return template 'login', { error => 'Falscher Username/Password' }, { layout => 'login' };
     }
 
-    session user => $user;
+    session user => $entry->{handle};
 
     redirect '/BenutzerDB/';
 };
