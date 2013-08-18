@@ -1,6 +1,7 @@
 package RaumZeitLabor::BenutzerDB::Pinsync;
 # vim:ts=4:sw=4:expandtab
 # © 2011 Michael Stapelberg (see also: LICENSE)
+# © 2013 Simon Elsbrock
 #
 # Synchronizes the database PINs to the pinpad-controller EEPROM.
 
@@ -13,6 +14,7 @@ use POSIX qw(ceil strftime);
 # These modules are not in core:
 use AnyEvent;
 use AnyEvent::HTTP;
+use AnyEvent::HTTPD;
 use AnyEvent::HTTP::Stream;
 use JSON::XS;
 use DBI;
@@ -175,9 +177,58 @@ sub push_update {
         };
 }
 
+my $eeprom_crc = "0x0";
+my $last_pong = 0;
+sub setup_status_api { 
+    shift->reg_cb(
+        '/status/synced' => sub {
+            my ($httpd, $req) = @_;
+            $req->respond ({
+                 content => [ 'text/plain',
+                     (strftime("%s", localtime) - $last_pong) < 120 ? 1 : 0
+                 ]
+             });
+            $httpd->stop_request;
+        },
+        '/status/jsonp' => sub {
+            my ($httpd, $req) = @_;
+            $req->respond ({
+                 content => [ 'application/javascript',
+                     "pinsync_status('$eeprom_crc', $last_pong);"
+                 ]
+             });
+            $httpd->stop_request;
+        },
+        '/status' => sub {
+            my ($httpd, $req) = @_;
+            $req->respond ({
+                 content => [ 'application/json',
+                    encode_json({
+                        last_sync => 0+$last_pong,
+                        crc => $eeprom_crc,
+                    })
+                ]
+            });
+            $httpd->stop_request;
+        },
+        '' => sub {
+            my ($httpd, $req) = @_;
+            $req->respond ([ '404', 'ok', {'Content-Type' => 'text/plain'}, 'did you mean /status?' ]);
+        },
+    );
+};
+
 sub run {
     openlog('pin-sync', 'pid', 'daemon');
     syslog('info', 'Starting up');
+
+    my $httpd = AnyEvent::HTTPD->new (
+        host => '::',
+        port => 4223,
+        allowed_methods => ['GET'],
+        request_timeout => 3
+    );
+    setup_status_api($httpd);
 
     my $stream;
     $stream = AnyEvent::HTTP::Stream->new(
@@ -188,6 +239,9 @@ sub run {
             my $pkt = decode_json($data);
             return unless exists $pkt->{payload};
             my $payload = $pkt->{payload};
+
+            # we got a valid payload packet
+            $last_pong = POSIX::strftime("%s", localtime);
 
             # The pinpad-controller broadcasts the CRC32 checksum of its EEPROM
             # contents.
@@ -207,7 +261,7 @@ sub run {
                     q|SELECT pin FROM nutzer WHERE pin IS NOT NULL|,
                     { Slice => {} });
                 my $eeprom = generate_eeprom(@$pins);
-                my $eeprom_crc = crc_to_hex(substr($eeprom, 0, 4));
+                $eeprom_crc = crc_to_hex(substr($eeprom, 0, 4));
                 syslog('info', "Pinpad-Controller  EEPROM CRC32 is $pinpad_crc");
                 syslog('info', "Database generated EEPROM CRC32 is $eeprom_crc");
 
