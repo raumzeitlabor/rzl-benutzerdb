@@ -31,7 +31,7 @@ hook before => sub {
     }
 
     # Save the state in vars so that we can use it in templates.
-    vars->{user} = $user;
+    vars->{user} = lc $user;
     vars->{logged_in} = $logged_in;
     vars->{is_admin} = $is_admin;
     vars->{has_pin} = $has_pin;
@@ -101,7 +101,7 @@ post '/BenutzerDB/login' => sub {
         return template 'login', { error => 'Falscher Username/Password' }, { layout => 'login' };
     }
 
-    session user => $entry->{handle};
+    session user => lc $entry->{handle};
 
     redirect '/BenutzerDB/';
 };
@@ -217,7 +217,7 @@ post '/BenutzerDB/my/devices/add' => sub {
     }
 
     $db->quick_insert('devices', {
-        handle => session('user'),
+        handle => lc session('user'),
         name => $host,
         mac => lc $mac,
         updatelastseen => $update ? 1 : 0,
@@ -466,7 +466,7 @@ post '/BenutzerDB/register' => sub {
         !exists params->{reg_password}) {
         return template 'register', { title => 'Registration', error => 'Nutzername/Passwort fehlen' };
     }
-    my $user = params->{reg_username};
+    my $user = lc params->{reg_username};
     my $real = params->{reg_realname};
     my $pass = params->{reg_password};
     my $db = database;
@@ -499,7 +499,7 @@ post '/BenutzerDB/register' => sub {
         admin => 0
     });
 
-    session user => $user;
+    session user => lc $user;
 
     redirect '/BenutzerDB/';
 };
@@ -529,6 +529,7 @@ Michael Stapelberg, C<< <michael at stapelberg.de> >>
 =head1 LICENSE AND COPYRIGHT
 
 Copyright 2011-2012 Michael Stapelberg.
+Copyright 2013-2014 Simon Elsbrock.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the BSD license.
