@@ -1,0 +1,24 @@
+#!/bin/sh
+# postrm script for raumzeitbenutzerdb
+#
+# see: dh_installdeb(1)
+
+set -e
+
+#DEBHELPER#
+
+if [ "$1" = "purge" ]; then
+    rm -f /usr/share/raumzeitbenutzerdb
+
+    rm -f /etc/systemd/system/raumzeitbenutzerdb.service
+    rm -f /etc/systemd/system/multi-user.target.wants/raumzeitbenutzerdb.service
+
+    rm -f /var/lib/systemd/deb-systemd-helper-enabled/raumzeitbenutzerdb.service.dsh-also
+    rm -f /var/lib/systemd/deb-systemd-helper-enabled/multi-user.target.wants/raumzeitbenutzerdb.service
+    rm -f /var/lib/systemd/deb-systemd-helper-masked/raumzeitbenutzerdb.service
+
+    deluser --quiet --system rzl-benutzerdb || true
+    delgroup --quiet --system --only-if-empty rzl-benutzerdb || true
+fi
+
+exit 0

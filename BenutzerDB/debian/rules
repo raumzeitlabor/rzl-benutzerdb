@@ -6,4 +6,4 @@ override_dh_auto_install:
 	rm -rf debian/raumzeitbenutzerdb/usr/lib/perl5
 
 %:
-	dh $@
+	dh $@ --with systemd

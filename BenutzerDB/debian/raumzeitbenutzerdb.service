@@ -1,0 +1,10 @@
+[Unit]
+Description=RaumZeitBenutzerDB
+
+[Service]
+User=rzl
+Restart=always
+ExecStart=/usr/bin/raumzeitbenutzerdb
+
+[Install]
+WantedBy=multi-user.target
