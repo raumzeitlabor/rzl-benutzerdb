@@ -298,7 +298,8 @@ get '/BenutzerDB/sshkeys/:what' => sub {
             sshpubkeys AS k LEFT JOIN
             nutzer AS n ON k.handle = n.handle
         WHERE
-            n.pin IS NOT NULL|
+            n.pin IS NOT NULL
+            AND (n.pin_expiry IS NULL OR n.pin_expiry > NOW())|
         , { Slice => {} });
 
     return to_json $keys;
@@ -329,6 +330,7 @@ get '/BenutzerDB/pins/:what' => sub {
         FROM
             nutzer
         WHERE pin IS NOT NULL
+            AND (pin_expiry IS NULL OR pin_expiry > NOW())
         ORDER BY id ASC|,
         { Slice => {} });
 
