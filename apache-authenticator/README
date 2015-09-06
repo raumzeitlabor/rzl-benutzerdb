@@ -1,0 +1,30 @@
+STUB
+
+example Apache config
+
+<VirtualHost *:443>
+    # load the module so we can set the global config
+    PerlModule RaumZeitLabor::Apache::BenutzerDBAuthenticator
+    
+    <Perl>
+        RaumZeitLabor::Apache::BenutzerDBAuthenticator::global_config(
+            database => 'nutzerdb',
+            host => 'db.rzl',
+            table => 'nutzer_hashesonly',
+            user => 'nutzerdb_ro',
+            password => 'geheim',
+        );
+    </Perl>
+
+    <Directory /var/www/auth-test>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride None
+        Order allow,deny
+        allow from all
+
+        AuthName "Authtest (Zugang wie BenutzerDB)"
+        AuthType Basic
+        PerlAuthenHandler RaumZeitLabor::Apache::BenutzerDBAuthenticator
+        Require valid-user
+    </Directory>
+</VirtualHost>
