@@ -334,7 +334,7 @@ get '/BenutzerDB/pins/:what' => sub {
         ORDER BY id ASC|,
         { Slice => {} });
 
-    return to_json $pins;
+    return to_json($pins, {canonical => 1});
 };
 
 get '/BenutzerDB/admin/users' => sub {
