@@ -26,7 +26,8 @@ p, label {
 <footer class="footer" style="margin-top: 8em">
 <p style="text-align: center; font-size: 13px; padding-top: 1em">
 Ansprechpartner: Else (jabber/mail: simon@iodev.org)<br/>
-Die BenutzerDB basiert auf der Arbeit von sECuRE (michael@stapelberg.de).
+Die BenutzerDB basiert auf der Arbeit von sECuRE (michael@stapelberg.de).<br/>
+<a href="https://wiki.raumzeitlabor.de/wiki/Datenschutzerkl%C3%A4rung_(Online)">Datenschutz</a>
 </p>
 </footer>
 
